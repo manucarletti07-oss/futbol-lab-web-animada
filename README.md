@@ -2,9 +2,9 @@
 
 Academia digital de fútbol ficticia en la que el movimiento forma parte del diseño. HTML y CSS puro, mobile first, sin JavaScript.
 
-- **Web publicada:** https://USUARIO.github.io/REPOSITORIO/
-- **Repositorio:** https://github.com/USUARIO/REPOSITORIO
-- **Portfolio:** https://USUARIO.github.io/PORTFOLIO/
+- **Web publicada:** https://manucarletti07-oss.github.io/futbol-lab-web-animada/
+- **Repositorio:** https://github.com/manucarletti07-oss/futbol-lab-web-animada
+- **Portfolio:** https://manucarletti07-oss.github.io/
 
 ## Páginas
 
