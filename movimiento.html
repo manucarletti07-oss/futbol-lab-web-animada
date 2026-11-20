@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Guía de movimiento de FÚTBOL LAB: carácter, tokens, tabla de animaciones y decisiones de interacción, rendimiento y accesibilidad.">
+    <title>Guía de movimiento | FÚTBOL LAB</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <!-- LETRAS: las cargo desde Google Fonts con un enlace, así no tengo
+         que guardar archivos de fuentes en el proyecto. Los dos
+         "preconnect" abren la conexión con los servidores de Google
+         antes de pedir nada, para que las letras lleguen antes.
+         display=swap: mientras llegan se ve el texto con la letra del
+         sistema y después se cambia (nunca hay texto invisible). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;800&amp;family=Bebas+Neue&amp;display=swap">
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+</head>
+<body>
+
+<a class="salto" href="#contenido">Saltar al contenido</a>
+
+<input class="visualmente-oculto pausa-global" type="checkbox" id="pausa-global">
+<label class="interruptor" for="pausa-global">
+    <span class="interruptor-pista" aria-hidden="true"><span class="interruptor-bola"></span></span>
+    Pausar animaciones
+</label>
+
+<header class="cabecera">
+    <!-- Barra de progreso de lectura. Le pongo aria-hidden porque es
+         solo visual y el lector de pantalla no tiene que anunciarla;
+         crece con el scroll (animaciones.css, sección 12). -->
+    <div class="barra-progreso" aria-hidden="true"></div>
+    <div class="contenedor navegacion-principal">
+        <a class="logo" href="index.html">
+            <img src="img/logo.svg" alt="FÚTBOL LAB, ir al inicio" width="480" height="200">
+        </a>
+        <input class="visualmente-oculto menu-check" type="checkbox" id="menu">
+        <label class="menu-boton" for="menu">
+            <span class="icono-menu" aria-hidden="true"><span></span><span></span><span></span></span>
+            Menú
+        </label>
+        <nav class="menu" aria-label="Menú principal">
+            <a href="index.html">Inicio</a>
+            <a href="entrenamientos.html">Entrenamientos</a>
+            <a href="instalaciones.html">Instalaciones</a>
+            <a href="movimiento.html" aria-current="page">Guía de movimiento</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Esta página es para leer, así que le he puesto menos movimiento a
+     propósito: solo la entrada del título, la barra de progreso y la
+     aparición de bloques al hacer scroll. Nada que distraiga. -->
+<main id="contenido">
+
+    <section class="cabecera-pagina" aria-labelledby="titulo-pagina">
+        <div class="contenedor">
+            <span class="etiqueta entrada" style="--orden: 0">DOCUMENTACIÓN · TEMA 07</span>
+            <h1 id="titulo-pagina" class="entrada" style="--orden: 1">GUÍA DE <em>MOVIMIENTO.</em></h1>
+            <p class="introduccion entrada" style="--orden: 2">
+                Qué se mueve en FÚTBOL LAB, cómo se mueve y, sobre todo, por qué.
+                Cada animación de la web responde a una de estas cuatro funciones:
+                dar feedback, orientar, explicar o dirigir la atención.
+            </p>
+            <!-- Uso blockquote porque es una cita textual del enunciado. -->
+            <blockquote class="cita entrada" style="--orden: 3">
+                <p>"Si todo se mueve, nada destaca."</p>
+            </blockquote>
+        </div>
+    </section>
+
+    <!-- 01. CARÁCTER -->
+    <section class="seccion" aria-labelledby="t-caracter">
+        <div class="contenedor">
+            <h2 id="t-caracter">01. CARÁCTER DEL <em>MOVIMIENTO.</em></h2>
+            <p class="introduccion">
+                Antes de escribir una sola animación definí la "personalidad" del
+                movimiento con tres adjetivos. Me sirvieron como filtro: si una
+                animación no era enérgica, precisa o controlada, la descartaba.
+            </p>
+
+            <div class="rejilla rejilla-tres">
+                <article class="tarjeta revelar">
+                    <h3>⚡ Enérgico</h3>
+                    <p>
+                        El fútbol es explosivo: arrancadas, cambios de ritmo, pases rápidos.
+                        Por eso la curva principal (<code>--curva-entrada</code>) arranca muy
+                        rápido y frena al final, como un jugador que acelera y se detiene en
+                        seco. Nada empieza lento ni "flota" sin rumbo.
+                    </p>
+                </article>
+                <article class="tarjeta revelar">
+                    <h3>🎯 Preciso</h3>
+                    <p>
+                        Un buen control no tiene toques de más. Los desplazamientos son
+                        cortos (3 px un botón, 6 px una tarjeta, 12 px el menú) y las
+                        duraciones breves (150-300 ms). La interfaz responde exactamente
+                        a lo que hace el usuario, sin adornos.
+                    </p>
+                </article>
+                <article class="tarjeta revelar">
+                    <h3>🧭 Controlado</h3>
+                    <p>
+                        Como un equipo que sabe cuándo pausar el juego, el usuario
+                        decide: todos los bucles se pueden parar con el interruptor
+                        global, la pizarra y el prisma tienen su propia pausa y la web
+                        respeta la preferencia de movimiento reducido del sistema.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02. TOKENS -->
+    <section class="seccion seccion-alterna" aria-labelledby="t-tokens">
+        <div class="contenedor">
+            <h2 id="t-tokens">02. TOKENS DE <em>MOVIMIENTO.</em></h2>
+            <p>
+                Igual que la paleta de colores, las duraciones y curvas están definidas
+                una sola vez en <code>:root</code> (al principio de
+                <code>css/animaciones.css</code>) y todas las animaciones las reutilizan.
+                Así el movimiento es coherente en toda la web y, si quiero que todo vaya
+                un poco más rápido, solo cambio un valor.
+            </p>
+
+            <div class="tabla-scroll revelar">
+                <table>
+                    <caption>Tokens definidos en :root</caption>
+                    <thead>
+                        <tr><th scope="col">Token</th><th scope="col">Valor</th><th scope="col">Cuándo se usa</th><th scope="col">Por qué ese valor</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>--dur-rapida</code></td><td>150 ms</td><td>Botones, filtros, favorito, flechas</td><td>Por debajo de 200 ms se percibe como respuesta inmediata a la acción.</td></tr>
+                        <tr><td><code>--dur-media</code></td><td>300 ms</td><td>Menú, tarjetas, desplegables, filtro, cambio de página</td><td>Deja ver de dónde viene un elemento sin hacer esperar.</td></tr>
+                        <tr><td><code>--dur-lenta</code></td><td>600 ms</td><td>Giro 3D, entrada del título, zoom de imagen, latido</td><td>Movimientos grandes que el ojo tiene que poder seguir.</td></tr>
+                        <tr><td><code>--dur-bucle</code></td><td>6 s (y múltiplos)</td><td>Jugador, sello, pizarra, prisma (×1,5), cinta (×5)</td><td>Lento para que se perciba de reojo sin distraer.</td></tr>
+                        <tr><td><code>--escalonado</code></td><td>90 ms</td><td>Entrada en cascada, ola del filtro</td><td>Se nota el orden sin que la cascada se haga larga.</td></tr>
+                        <tr><td><code>--curva-entrada</code></td><td><code>cubic-bezier(.2,.8,.2,1)</code></td><td>Todo lo que entra o responde</td><td>Arranca rápido y frena: energía + precisión.</td></tr>
+                        <tr><td><code>--curva-salida</code></td><td><code>cubic-bezier(.4,0,1,1)</code></td><td>Cerrar menú, salir de página</td><td>Acelera al irse: lo que sale no pide atención.</td></tr>
+                        <tr><td><code>--curva-suave</code></td><td><code>cubic-bezier(.45,0,.55,1)</code></td><td>Bucles de ida y vuelta</td><td>Simétrica: sin tirones al cambiar de sentido.</td></tr>
+                        <tr><td><code>--curva-rebote</code></td><td><code>cubic-bezier(.34,1.56,.64,1)</code></td><td>Bola del interruptor</td><td>Se pasa un poco y vuelve: sensación de "encajar".</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03. TABLA DE ANIMACIONES -->
+    <section class="seccion" aria-labelledby="t-tabla">
+        <div class="contenedor">
+            <h2 id="t-tabla">03. TABLA DE <em>ANIMACIONES.</em></h2>
+            <p>
+                Inventario completo. Todas animan solo <code>transform</code> (o sus
+                propiedades individuales <code>translate</code>, <code>scale</code>,
+                <code>rotate</code>) y <code>opacity</code>. La única excepción es
+                <code>visibility</code> en el menú, que no se interpola y solo se
+                retrasa para que el fundido termine.
+            </p>
+
+            <div class="tabla-scroll revelar">
+                <table>
+                    <caption>Animaciones de FÚTBOL LAB (desliza horizontalmente en móvil)</caption>
+                    <thead>
+                        <tr><th scope="col">Elemento</th><th scope="col">Tipo</th><th scope="col">Propiedades</th><th scope="col">Duración</th><th scope="col">Curva</th><th scope="col">Propósito</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Botones</td><td>transition (:hover, :focus-visible, :active)</td><td>transform: translateY, scale</td><td>150 ms</td><td>--curva-entrada</td><td>Feedback: confirma que el botón responde y que se ha pulsado.</td></tr>
+                        <tr><td>Brillo de los botones</td><td>transition (:hover, :focus-visible)</td><td>transform: translateX (::after)</td><td>600 ms</td><td>--curva-entrada</td><td>Dirige la vista a la acción principal.</td></tr>
+                        <tr><td>Enlaces del menú y del pie</td><td>transition</td><td>transform: scaleX (subrayado); opacity en :active</td><td>300 ms / 150 ms</td><td>--curva-entrada</td><td>Feedback: indica qué enlace se va a activar y confirma el clic.</td></tr>
+                        <tr><td>Flecha ↗ de enlaces</td><td>transition</td><td>transform: translate</td><td>150 ms</td><td>--curva-entrada</td><td>Anticipa que el enlace lleva a otra página.</td></tr>
+                        <tr><td>Tarjetas enlace</td><td>transition</td><td>transform: perspective, rotateY, translateY; scale(.98) en :active</td><td>300 ms</td><td>--curva-entrada</td><td>Indica que toda la tarjeta es pulsable y confirma la pulsación.</td></tr>
+                        <tr><td>Imagen dentro de tarjeta</td><td>transition</td><td>transform: scale</td><td>600 ms</td><td>--curva-entrada</td><td>Profundidad: la imagen va más lenta que la tarjeta.</td></tr>
+                        <tr><td>Menú móvil</td><td>transition</td><td>opacity, transform: translateY (+ visibility retrasada)</td><td>300 ms</td><td>entrada al abrir / salida al cerrar</td><td>Orienta: el menú sale de la cabecera y vuelve a ella.</td></tr>
+                        <tr><td>Icono hamburguesa → X</td><td>transition</td><td>transform: translateY, rotate, scaleX; opacity</td><td>300 ms</td><td>--curva-entrada</td><td>Microinteracción: el icono dice qué hará el siguiente toque.</td></tr>
+                        <tr><td>Favorito ♥</td><td>@keyframes latido</td><td>scale</td><td>600 ms</td><td>--curva-entrada</td><td>Microinteracción "me gusta": celebra y confirma la acción.</td></tr>
+                        <tr><td>Instrucciones (details)</td><td>@keyframes desplegar + transition</td><td>opacity, translate; rotate (flecha)</td><td>300 ms</td><td>--curva-entrada</td><td>Microinteracción: conecta el texto nuevo con su botón.</td></tr>
+                        <tr><td>Tarjetas al filtrar</td><td>@keyframes aparecer-filtro</td><td>opacity, translate, scale</td><td>300 ms (+90 ms por columna)</td><td>--curva-entrada</td><td>Hace visible que la lista ha cambiado.</td></tr>
+                        <tr><td>Interruptor de pausa</td><td>transition</td><td>transform: translateX</td><td>300 ms</td><td>--curva-rebote</td><td>Microinteracción: estado on/off como un interruptor físico.</td></tr>
+                        <tr><td>Cabecera de cada página</td><td>@keyframes entrada (cascada)</td><td>opacity, translate</td><td>600 ms, +90 ms por elemento</td><td>--curva-entrada</td><td>Dirige la vista en orden de lectura hasta el botón.</td></tr>
+                        <tr><td>Subrayado de la palabra destacada</td><td>@keyframes subrayar</td><td>transform: scaleX</td><td>600 ms, después del título</td><td>--curva-entrada</td><td>Lleva la vista a la palabra más importante del título.</td></tr>
+                        <tr><td>Números de la portada</td><td>@keyframes contar + @property</td><td>--numero (entero) → counter()</td><td>1,2 s, una vez</td><td>--curva-entrada</td><td>Destaca los datos clave de la academia. Excepción justificada: repinta el texto.</td></tr>
+                        <tr><td>Skeleton de las imágenes</td><td>@keyframes skeleton (8 repeticiones)</td><td>transform: translateX</td><td>1,2 s</td><td>linear</td><td>Indica que la imagen se está cargando.</td></tr>
+                        <tr><td>Tooltip del favorito</td><td>transition</td><td>opacity, translate</td><td>150 ms</td><td>--curva-entrada</td><td>Microinteracción: explica para qué sirve el corazón.</td></tr>
+                        <tr><td>Jugador de la portada</td><td>@keyframes respirar (bucle)</td><td>transform: translateY</td><td>3 s, alternate</td><td>--curva-suave</td><td>Da vida a la ilustración sin pedir atención.</td></tr>
+                        <tr><td>Sello flotante</td><td>@keyframes flotar (bucle)</td><td>transform: translateY, rotate</td><td>6 s</td><td>--curva-suave</td><td>Refuerza la identidad de marca.</td></tr>
+                        <tr><td>Cinta de palabras</td><td>@keyframes cinta (bucle)</td><td>transform: translateX</td><td>30 s</td><td>linear</td><td>Repite los valores de marca; velocidad constante para leer.</td></tr>
+                        <tr><td>Fichas de nuestro equipo (pizarra)</td><td>@keyframes ataque (bucle)</td><td>transform: translate</td><td>6 s, retardos negativos</td><td>--curva-suave</td><td>Explica: representa desmarques de ataque.</td></tr>
+                        <tr><td>Fichas rivales (pizarra)</td><td>@keyframes defensa (bucle)</td><td>transform: translate</td><td>6 s, retardos negativos</td><td>--curva-suave</td><td>Explica: representa repliegue y basculación.</td></tr>
+                        <tr><td>Balón (pizarra)</td><td>@keyframes pase (bucle)</td><td>transform: translate, rotate</td><td>6 s</td><td>--curva-suave</td><td>Simula el pase a la vez que los desmarques; gira para que parezca que rueda.</td></tr>
+                        <tr><td>Tarjetas 3D (instalaciones y logotipos)</td><td>Transformación 3D (transition)</td><td>transform: rotateY 180°; hover rotateY/rotateX</td><td>600 ms</td><td>--curva-entrada</td><td>Muestra información extra en la cara trasera.</td></tr>
+                        <tr><td>Prisma de los pilares</td><td>@keyframes girar-prisma (3D, bucle)</td><td>transform: rotateY</td><td>9 s (3 s por cara)</td><td>--curva-entrada</td><td>Resume las tres categorías del catálogo.</td></tr>
+                        <tr><td>Bloques con clase .revelar</td><td>@keyframes + animation-timeline: view()</td><td>opacity, translate</td><td>Ligada al scroll</td><td>linear</td><td>Orienta durante la lectura: marca qué contenido es nuevo.</td></tr>
+                        <tr><td>Cambio de página</td><td>@view-transition</td><td>opacity, transform: translateY</td><td>300 ms</td><td>salida / entrada</td><td>Continuidad: la cabecera se queda y el contenido se funde.</td></tr>
+                        <tr><td>Barra de progreso de lectura</td><td>@keyframes + animation-timeline: scroll()</td><td>transform: scaleX</td><td>Ligada al scroll</td><td>linear</td><td>Orienta: indica cuánto queda de página.</td></tr>
+                        <tr><td>Entrada del interruptor de pausa</td><td>@starting-style + transition</td><td>opacity, translate</td><td>600 ms</td><td>--curva-entrada</td><td>Dirige la atención una vez hacia el control de pausa.</td></tr>
+                        <tr><td>Pausas (global, pizarra, prisma)</td><td>animation-play-state</td><td>paused / running</td><td>Inmediata</td><td>—</td><td>Control: el usuario detiene cualquier bucle.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 04. DECISIONES -->
+    <section class="seccion seccion-alterna" aria-labelledby="t-decisiones">
+        <div class="contenedor">
+            <h2 id="t-decisiones">04. DECISIONES <em>JUSTIFICADAS.</em></h2>
+
+            <div class="decisiones">
+                <article class="decision revelar">
+                    <span class="tipo-decision">INTERACCIÓN</span>
+                    <h3>1. Tres capas: la web funciona sin moverse</h3>
+                    <p>
+                        He separado el CSS en dos archivos con un criterio claro: en
+                        <code>estilos.css</code> están los ESTADOS (menú abierto, tarjeta
+                        girada, filtro activo, página actual) y en <code>animaciones.css</code>
+                        solo el VIAJE entre estados. Si se elimina <code>animaciones.css</code>,
+                        el menú se abre de golpe, las tarjetas cambian de cara al instante
+                        y el filtro sigue filtrando: la web pierde movimiento, no información.
+                    </p>
+                    <p>
+                        Además, la interacción está hecha sin JavaScript (checkbox y radio
+                        ocultos con <code>:checked</code> y <code>:has()</code>), así que no
+                        hay ningún script que pueda fallar o tardar en cargar.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">INTERACCIÓN</span>
+                    <h3>2. Hover solo con ratón y foco con el mismo feedback</h3>
+                    <p>
+                        Todos los <code>:hover</code> están dentro de
+                        <code>@media (hover: hover)</code>. En un móvil no existe "pasar
+                        por encima": al tocar, el estado hover se queda pegado y la
+                        tarjeta se quedaba inclinada hasta tocar otra cosa.
+                    </p>
+                    <p>
+                        Quien navega con teclado recibe el mismo movimiento con
+                        <code>:focus-visible</code> más un contorno amarillo de 3 px separado
+                        4 px. Lo hice amarillo y no azul o rojo a propósito: así no se
+                        confunde con los colores del club y se ve igual de bien sobre un
+                        botón rojo, uno azul o el fondo marino. Uso
+                        <code>:focus-visible</code> y no <code>:focus</code> para que el
+                        contorno no aparezca al hacer clic con ratón.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">INTERACCIÓN</span>
+                    <h3>3. Curvas distintas para entrar y para salir</h3>
+                    <p>
+                        El menú usa <code>--curva-entrada</code> al abrirse (llega rápido y
+                        frena, para que el usuario pueda leer enseguida) y
+                        <code>--curva-salida</code> al cerrarse (empieza despacio y acelera,
+                        se marcha sin reclamar atención). Para conseguirlo declaro una
+                        <code>transition</code> distinta en el estado abierto y en el cerrado:
+                        el navegador usa siempre la del estado al que se va.
+                    </p>
+                    <p>
+                        El retardo de <code>visibility</code> al cerrar es la única propiedad
+                        no compuesta que toco: sin él el panel desaparecía antes de
+                        terminar el fundido. Al estar oculto con <code>visibility</code>,
+                        los enlaces del menú cerrado no reciben el foco del tabulador.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">INTERACCIÓN</span>
+                    <h3>4. Microinteracciones que dicen algo</h3>
+                    <p>
+                        Cada microinteracción comunica un estado: el icono hamburguesa se
+                        convierte en X (indica que el siguiente toque cierra), el corazón
+                        late al marcar favorito (confirma la acción), la flecha del
+                        desplegable gira (indica abierto/cerrado), el interruptor desliza
+                        su bola (on/off) y los botones de pausa cambian su texto a
+                        "Reanudar".
+                    </p>
+                    <p>
+                        En el favorito animo la propiedad <code>scale</code> y no
+                        <code>transform</code>: así el latido no choca con el
+                        <code>transform: scale(.96)</code> del estado <code>:active</code>.
+                        Las dos se combinan en lugar de pisarse.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">RENDIMIENTO</span>
+                    <h3>5. Solo transform y opacity</h3>
+                    <p>
+                        Cambiar <code>width</code>, <code>top</code> o <code>margin</code>
+                        obliga al navegador a recalcular el diseño (layout) y repintar en
+                        cada fotograma. <code>transform</code> y <code>opacity</code> se
+                        resuelven en la fase de composición, en la GPU, sin tocar al resto
+                        de la página. Por eso el subrayado de enlaces es un
+                        <code>scaleX</code> y no un <code>width</code> que crece, y las
+                        fichas de la pizarra se mueven con <code>translate</code> y no
+                        cambiando <code>left</code>.
+                    </p>
+                    <p>
+                        Lo he comprobado con DevTools → Rendering → Paint flashing: al
+                        pasar sobre una tarjeta solo aparece un recuadro verde puntual
+                        sobre su imagen en el primer fotograma (el navegador la "sube" a
+                        su propia capa para hacer el zoom) y durante el resto de la
+                        animación no hay ningún repintado. Podría evitar ese primer
+                        repintado con <code>will-change: transform</code>, pero no lo uso de
+                        forma global porque reservaría memoria de GPU para elementos que
+                        quizá nunca se animen: un repintado al empezar no se nota.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">RENDIMIENTO</span>
+                    <h3>6. Scroll con CSS en lugar de JavaScript</h3>
+                    <p>
+                        La aparición al hacer scroll usa <code>animation-timeline: view()</code>:
+                        el navegador relaciona la animación con la posición del elemento
+                        y la ejecuta fuera del hilo principal. Con JavaScript habría que
+                        escuchar el evento scroll o usar IntersectionObserver.
+                    </p>
+                    <p>
+                        Va dentro de <code>@supports (animation-timeline: view())</code>.
+                        En Firefox, que aún no lo admite, la regla se ignora y el contenido
+                        se ve exactamente igual, ya visible. Elegí <code>opacity</code> de 0
+                        a 1 y solo 40 px de recorrido: es suficiente para marcar "esto es
+                        nuevo" y nunca hay riesgo de que algo quede oculto, porque sin la
+                        animación el estado por defecto es visible.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">RENDIMIENTO</span>
+                    <h3>7. Sin scroll horizontal, ni durante las animaciones</h3>
+                    <p>
+                        La cinta mide más que la pantalla y las tarjetas se inclinan en 3D,
+                        así que podían generar barra horizontal. Lo evito con
+                        <code>overflow: hidden</code> en la cinta, la escena de la portada y
+                        el campo, y con <code>overflow-x: clip</code> en el body como red de
+                        seguridad (<code>clip</code> y no <code>hidden</code> porque
+                        <code>hidden</code> rompe la cabecera <code>sticky</code>). Las tablas
+                        de esta guía tienen su propio scroll dentro de un contenedor.
+                    </p>
+                    <p>
+                        Las imágenes son SVG con <code>width</code> y <code>height</code> en
+                        el HTML para que el navegador reserve su espacio y no haya saltos de
+                        contenido al cargar, y las que están fuera de la primera pantalla
+                        usan <code>loading="lazy"</code>.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">ACCESIBILIDAD</span>
+                    <h3>8. Movimiento reducido con estrategia "opt-in"</h3>
+                    <p>
+                        En lugar de animar todo y luego anularlo con
+                        <code>!important</code>, todo el movimiento está dentro de
+                        <code>@media (prefers-reduced-motion: no-preference)</code>: solo se
+                        activa si el usuario no ha pedido lo contrario. Si un navegador no
+                        entiende la media query, recibe la versión estática, que es la segura.
+                    </p>
+                    <p>
+                        Con movimiento reducido no desaparece el feedback: el menú hace un
+                        fundido de opacidad de 150 ms, porque un cambio de opacidad no causa
+                        mareo (lo que afecta a las personas con trastornos vestibulares es el
+                        desplazamiento, la rotación y el zoom). Las tarjetas 3D cambian de cara
+                        al instante y el prisma se queda quieto mostrando "Técnica"; los tres
+                        pilares están también escritos en el párrafo de al lado.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">ACCESIBILIDAD</span>
+                    <h3>9. Todo bucle se puede pausar</h3>
+                    <p>
+                        La norma WCAG 2.2.2 pide que cualquier contenido que se mueva más de
+                        5 segundos se pueda detener. Por eso hay un interruptor fijo
+                        "Pausar animaciones" en las cuatro páginas: un checkbox al inicio del
+                        <code>body</code> que, con <code>body:has(#pausa-global:checked)</code>,
+                        congela con <code>animation-play-state: paused</code> el jugador, el
+                        sello, la cinta, la pizarra y el prisma.
+                    </p>
+                    <p>
+                        Pauso solo los bucles y no todas las animaciones a propósito: si
+                        congelara también la entrada o el filtro, una tarjeta podría quedarse
+                        a mitad de animación con opacidad 0. La pizarra y el prisma tienen
+                        además su propio botón porque congelar la jugada sirve para estudiarla.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">ACCESIBILIDAD</span>
+                    <h3>10. Controles reales, aunque estén ocultos</h3>
+                    <p>
+                        Los checkbox y radio que hacen funcionar el menú, los filtros, las
+                        tarjetas 3D y las pausas están ocultos con la técnica
+                        <code>.visualmente-oculto</code> (1 px y <code>clip-path</code>), no
+                        con <code>display: none</code>. Así se pueden usar con el tabulador
+                        y la barra espaciadora, y el lector de pantalla anuncia su estado
+                        ("Favorito, casilla, marcada"). El color rojo del corazón nunca es la
+                        única pista del estado.
+                    </p>
+                    <p>
+                        Los elementos decorativos o repetidos (la cinta, el sello, el prisma)
+                        llevan <code>aria-hidden="true"</code> o <code>alt=""</code> para que
+                        el lector no lea el mismo texto dos veces, y la pizarra tiene
+                        <code>role="img"</code> con una descripción de la jugada.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">RENDIMIENTO</span>
+                    <h3>11. Los números de la portada: mi única excepción</h3>
+                    <p>
+                        Quería que los datos de la academia (12 ejercicios, 06 instalaciones,
+                        100 % fútbol) fueran lo primero que se viera, y por eso cuentan desde 0.
+                        Para hacerlo solo con CSS registro una variable con
+                        <code>@property --numero</code> como número entero: así el navegador
+                        sabe ir de 0 a 12 pasando por todos los números, y los enseño con un
+                        contador en <code>::after</code>.
+                    </p>
+                    <p>
+                        Esto no anima <code>transform</code> ni <code>opacity</code>, porque el
+                        texto se tiene que repintar en cada número. Lo acepto porque son solo
+                        tres números pequeños, una sola vez y durante 1,2 segundos. El número
+                        real está escrito en el HTML: con movimiento reducido, o en un
+                        navegador que no tenga <code>@property</code>, se ve directamente.
+                    </p>
+                </article>
+
+                <article class="decision revelar">
+                    <span class="tipo-decision">INTERACCIÓN</span>
+                    <h3>12. Avisar de que algo está cargando</h3>
+                    <p>
+                        Las imágenes de las tarjetas cargan con <code>loading="lazy"</code>, es
+                        decir, solo cuando te acercas a ellas. En un móvil con mala conexión el
+                        hueco se quedaba vacío un momento y parecía que faltaba algo. Por eso
+                        puse un "skeleton": una franja clara que cruza el hueco mientras la
+                        imagen llega, y que la imagen tapa cuando aparece.
+                    </p>
+                    <p>
+                        La franja se mueve con <code>translateX</code> y solo se repite 8 veces
+                        (unos 10 segundos). Así no dejo una animación infinita escondida
+                        detrás de la imagen gastando batería, y también se para con el
+                        interruptor de pausa.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 05. GRABACIONES Y CAPTURAS. Los vídeos no se reproducen solos
+         (sin autoplay): cada uno decide cuándo verlos. -->
+    <section class="seccion" aria-labelledby="t-pruebas">
+        <div class="contenedor">
+            <h2 id="t-pruebas">05. GRABACIONES Y <em>CAPTURAS.</em></h2>
+            <p>
+                Una captura no muestra el movimiento, así que estas grabaciones cortas
+                (menos de 15 s) enseñan las animaciones principales. Están en la carpeta
+                <code>grabaciones/</code>.
+            </p>
+
+            <div class="galeria-medios">
+                <figure>
+                    <video controls muted preload="metadata" width="1280" height="720" src="grabaciones/hero.mp4"><a href="grabaciones/hero.mp4">Descargar el vídeo</a></video>
+                    <figcaption>Portada: entrada en cascada, jugador, sello y cinta.</figcaption>
+                </figure>
+                <figure>
+                    <video controls muted preload="metadata" width="1280" height="720" src="grabaciones/microinteracciones.mp4"><a href="grabaciones/microinteracciones.mp4">Descargar el vídeo</a></video>
+                    <figcaption>Microinteracciones: filtros, desplegable, favorito, tarjetas e interruptor de pausa.</figcaption>
+                </figure>
+                <figure>
+                    <video controls muted preload="metadata" width="1280" height="720" src="grabaciones/scroll.mp4"><a href="grabaciones/scroll.mp4">Descargar el vídeo</a></video>
+                    <figcaption>Aparición al hacer scroll, pizarra con pausa y tarjetas 3D.</figcaption>
+                </figure>
+                <figure>
+                    <video controls muted preload="metadata" width="390" height="844" src="grabaciones/menu-movil.mp4"><a href="grabaciones/menu-movil.mp4">Descargar el vídeo</a></video>
+                    <figcaption>Menú móvil: el icono se convierte en X y el panel baja desde la cabecera.</figcaption>
+                </figure>
+                <figure>
+                    <video controls muted preload="metadata" width="1280" height="720" src="grabaciones/movimiento-reducido.mp4"><a href="grabaciones/movimiento-reducido.mp4">Descargar el vídeo</a></video>
+                    <figcaption>Con prefers-reduced-motion: reduce. Todo funciona, nada se desplaza.</figcaption>
+                </figure>
+            </div>
+
+            <h3 class="subtitulo-medios">Capturas en los tres tamaños</h3>
+            <p>
+                Comprobado en 360, 768 y 1280 px con DevTools (Ctrl + Shift + M) sin
+                scroll horizontal. Son capturas de página completa: pulsa una para verla
+                a tamaño real. Carpeta <code>capturas/</code>.
+            </p>
+            <!-- Las capturas son muy altas (página entera): enseño solo la
+                 parte de arriba con object-fit y el enlace abre la imagen entera. -->
+            <div class="galeria-medios galeria-capturas">
+                <figure>
+                    <a href="capturas/movil.png"><img src="capturas/movil.png" alt="Captura: Inicio en móvil · 360 px" loading="lazy"></a>
+                    <figcaption>Inicio en móvil · 360 px</figcaption>
+                </figure>
+                <figure>
+                    <a href="capturas/tableta.png"><img src="capturas/tableta.png" alt="Captura: Inicio en tableta · 768 px" loading="lazy"></a>
+                    <figcaption>Inicio en tableta · 768 px</figcaption>
+                </figure>
+                <figure>
+                    <a href="capturas/ordenador.png"><img src="capturas/ordenador.png" alt="Captura: Inicio en ordenador · 1280 px" loading="lazy"></a>
+                    <figcaption>Inicio en ordenador · 1280 px</figcaption>
+                </figure>
+                <figure>
+                    <a href="capturas/entrenamientos.png"><img src="capturas/entrenamientos.png" alt="Captura: Entrenamientos · 1280 px" loading="lazy"></a>
+                    <figcaption>Entrenamientos · 1280 px</figcaption>
+                </figure>
+                <figure>
+                    <a href="capturas/instalaciones.png"><img src="capturas/instalaciones.png" alt="Captura: Instalaciones · 1280 px" loading="lazy"></a>
+                    <figcaption>Instalaciones · 1280 px</figcaption>
+                </figure>
+                <figure>
+                    <a href="capturas/movimiento.png"><img src="capturas/movimiento.png" alt="Captura: Guía de movimiento · 1280 px" loading="lazy"></a>
+                    <figcaption>Guía de movimiento · 1280 px</figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <!-- 06. RECURSOS -->
+    <section class="seccion seccion-alterna" aria-labelledby="t-recursos">
+        <div class="contenedor revelar">
+            <h2 id="t-recursos">06. LIBRERÍAS, RECURSOS <em>Y AUTORÍA.</em></h2>
+            <h3>Librerías</h3>
+            <p>
+                No he usado ninguna librería. Me planteé añadir AOS para las apariciones
+                al hacer scroll, pero al final lo hice con <code>animation-timeline: view()</code>,
+                que ya lo hace el propio CSS sin cargar archivos de fuera ni JavaScript.
+                Así todas las animaciones son mías y las controlo con los mismos tokens.
+                Tampoco hay JavaScript en la web: el menú, los filtros, los favoritos,
+                las tarjetas que giran y las pausas funcionan con checkbox y radio
+                ocultos y los selectores <code>:checked</code> y <code>:has()</code>.
+            </p>
+
+            <h3>Imágenes e iconos</h3>
+            <p>
+                Partí de mis logotipos (escudo, camiseta, balón, insignia circular y el
+                favicon) y a partir de ellos hice el resto de ilustraciones en SVG: el
+                estadio y el jugador de la portada, las seis instalaciones y los doce
+                esquemas de ejercicios. Usé siempre los mismos colores de la marca
+(el azul <code>#1f5eff</code> y el rojo <code>#e63946</code> del club sobre
+                el marino <code>#0a1633</code>), la camiseta de rayas y el mismo balón y
+                escudo, para que todo se vea como parte del mismo club. En las pizarras
+                nuestro equipo va mitad azul y mitad rojo y el rival de blanco. Elegí SVG porque se ve nítido en cualquier pantalla
+                y pesa muy poco. Las instalaciones son inventadas para el proyecto.
+            </p>
+            <p>
+                Los iconos de las tarjetas (⚽ 🧠 🤝 ★ ♥) son emojis y símbolos del propio
+                sistema, así que no he tenido que descargar ninguna imagen de internet.
+            </p>
+
+            <h3>Tipografías</h3>
+            <p>
+                Para los títulos uso <strong>Bebas Neue</strong> (de Dharma Type) y para el
+                texto <strong>Barlow</strong> (de Jeremy Tribby). Las dos son de Google Fonts
+                y tienen licencia libre SIL Open Font License, que permite usarlas en una web.
+                Elegí Bebas Neue porque es alta y estrecha, como los números de un marcador o
+                de una camiseta, y Barlow porque se lee muy bien en párrafos largos. Las cargo
+                con un enlace a Google Fonts en el <code>&lt;head&gt;</code> de cada página, con
+                <code>preconnect</code> para que lleguen antes y <code>display=swap</code> para
+                que el texto se vea desde el principio con otra letra mientras cargan. Si
+                Google Fonts no cargara, la web usa Impact y Arial y se sigue leyendo bien.
+            </p>
+
+            <h3>De dónde salen las animaciones</h3>
+            <p>
+                El truco de usar un checkbox oculto para abrir el menú y girar las
+                tarjetas lo vimos en clase. Las tarjetas 3D siguen la técnica habitual de
+                dos caras con <code>backface-visibility: hidden</code>, y el cubo lo
+                cambié por un prisma de tres caras porque tengo tres pilares (técnica,
+                táctica y equipo). Para eso tuve que calcular la distancia
+                <code>translateZ</code>: para caras de 230 px salen 66 px. La pizarra
+                táctica, la cinta y el resto de animaciones las diseñé yo para la temática.
+            </p>
+
+            <h3>Uso de inteligencia artificial</h3>
+            <p>
+                He usado ChatGPT y Claude como ayuda durante el proyecto: para sacar los
+                primeros borradores del HTML y del CSS, para dibujar las ilustraciones SVG
+                a partir de mis logotipos, para ayudarme a redactar los comentarios y esta
+                guía y para hacer las capturas y las grabaciones. La temática, los
+                logotipos, la estructura de la web y las decisiones sobre qué se mueve y
+                por qué son míos, y he revisado y entendido todo el código antes de
+                entregarlo.
+            </p>
+            <div class="botones">
+                <a class="boton" href="index.html">Volver a la página principal</a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="pie">
+    <div class="contenedor pie-rejilla">
+        <div>
+            <img src="img/logo.svg" alt="FÚTBOL LAB" width="480" height="200">
+            <small>Proyecto educativo · Tema 07 · 2026. Ilustraciones SVG propias.</small>
+        </div>
+        <nav aria-label="Pie de página">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="entrenamientos.html">Entrenamientos</a></li>
+                <li><a href="instalaciones.html">Instalaciones</a></li>
+                <li><a href="movimiento.html">Guía de movimiento</a></li>
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Las seis instalaciones de FÚTBOL LAB: campo principal, campo cubierto, gimnasio, sala táctica, vestuarios y recuperación.">
+    <title>Instalaciones | FÚTBOL LAB</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <!-- LETRAS: las cargo desde Google Fonts con un enlace, así no tengo
+         que guardar archivos de fuentes en el proyecto. Los dos
+         "preconnect" abren la conexión con los servidores de Google
+         antes de pedir nada, para que las letras lleguen antes.
+         display=swap: mientras llegan se ve el texto con la letra del
+         sistema y después se cambia (nunca hay texto invisible). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;800&amp;family=Bebas+Neue&amp;display=swap">
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+</head>
+<body>
+
+<a class="salto" href="#contenido">Saltar al contenido</a>
+
+<!-- Interruptor para pausar todas las animaciones. Lo explico en el
+     comentario de index.html; es igual en las cuatro páginas. -->
+<input class="visualmente-oculto pausa-global" type="checkbox" id="pausa-global">
+<label class="interruptor" for="pausa-global">
+    <span class="interruptor-pista" aria-hidden="true"><span class="interruptor-bola"></span></span>
+    Pausar animaciones
+</label>
+
+<!-- La cabecera es igual en las cuatro páginas. Cuando cambio de
+     página (@view-transition) se queda quieta, porque le he dado su
+     propio view-transition-name, y solo cambia el contenido. -->
+<header class="cabecera">
+    <!-- Barra de progreso de lectura. Le pongo aria-hidden porque es
+         solo visual y el lector de pantalla no tiene que anunciarla;
+         crece con el scroll (animaciones.css, sección 12). -->
+    <div class="barra-progreso" aria-hidden="true"></div>
+    <div class="contenedor navegacion-principal">
+        <a class="logo" href="index.html">
+            <img src="img/logo.svg" alt="FÚTBOL LAB, ir al inicio" width="480" height="200">
+        </a>
+        <input class="visualmente-oculto menu-check" type="checkbox" id="menu">
+        <label class="menu-boton" for="menu">
+            <span class="icono-menu" aria-hidden="true"><span></span><span></span><span></span></span>
+            Menú
+        </label>
+        <nav class="menu" aria-label="Menú principal">
+            <a href="index.html">Inicio</a>
+            <a href="entrenamientos.html">Entrenamientos</a>
+            <a href="instalaciones.html" aria-current="page">Instalaciones</a>
+            <a href="movimiento.html">Guía de movimiento</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenido">
+
+    <section class="cabecera-pagina" aria-labelledby="titulo-pagina">
+        <div class="contenedor">
+            <span class="etiqueta entrada" style="--orden: 0">INSTALACIONES FÚTBOL LAB</span>
+            <h1 id="titulo-pagina" class="entrada" style="--orden: 1">ESPACIOS PARA <em>CRECER.</em></h1>
+            <p class="introduccion entrada" style="--orden: 2">
+                Seis espacios pensados para entrenar, analizar y recuperarse.
+                Pulsa cada tarjeta para darle la vuelta y leer su descripción.
+            </p>
+            <div class="botones entrada" style="--orden: 3">
+                <a class="boton" href="#espacios">Ver instalaciones ↓</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEIS TARJETAS 3D. Cada una es un checkbox + label: al pulsarla
+         (o con la barra espaciadora después de llegar con el tabulador)
+         gira 180° con rotateY y enseña la descripción por detrás.
+         Delante pongo el dibujo y detrás el texto: así separo "ver" de
+         "leer" sin que la tarjeta ocupe más sitio.
+         Con movimiento reducido cambia de cara de golpe, sin girar. -->
+    <section class="seccion" id="espacios" aria-labelledby="titulo-espacios">
+        <div class="contenedor">
+            <h2 id="titulo-espacios">CONOCE NUESTRAS <em>INSTALACIONES.</em></h2>
+            <div class="rejilla rejilla-tres">
+                <div class="tarjeta-3d revelar" id="inst-campo">
+                    <input class="visualmente-oculto" type="checkbox" id="inst1">
+                    <label for="inst1">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/instalacion-campo.svg" alt="" width="1000" height="660" loading="lazy">
+                                <strong>Campo principal</strong>
+                                <small>Pulsa para descubrir ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Campo principal</strong>
+                                <span>Césped natural de 105 × 68 m con focos LED para entrenar de noche. Aquí se juegan los partidos y los ejercicios de equipo.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+                <div class="tarjeta-3d revelar" id="inst-cubierto">
+                    <input class="visualmente-oculto" type="checkbox" id="inst2">
+                    <label for="inst2">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/instalacion-campo-cubierto.svg" alt="" width="1000" height="660" loading="lazy">
+                                <strong>Campo cubierto</strong>
+                                <small>Pulsa para descubrir ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Campo cubierto</strong>
+                                <span>Césped artificial bajo cubierta: rondos, pases y finalización sin depender de la lluvia ni del calor.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+                <div class="tarjeta-3d revelar" id="inst-gimnasio">
+                    <input class="visualmente-oculto" type="checkbox" id="inst3">
+                    <label for="inst3">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/instalacion-gimnasio.svg" alt="" width="1000" height="660" loading="lazy">
+                                <strong>Gimnasio</strong>
+                                <small>Pulsa para descubrir ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Gimnasio</strong>
+                                <span>Mancuernas, press de banca, pesas rusas y cinta de correr para la fuerza, la velocidad y la prevención de lesiones.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+                <div class="tarjeta-3d revelar" id="inst-tactica">
+                    <input class="visualmente-oculto" type="checkbox" id="inst4">
+                    <label for="inst4">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/instalacion-sala-tactica.svg" alt="" width="1000" height="660" loading="lazy">
+                                <strong>Sala táctica</strong>
+                                <small>Pulsa para descubrir ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Sala táctica</strong>
+                                <span>Pantalla grande para analizar vídeo, pizarra y butacas: aquí se preparan las jugadas antes de salir al campo.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+                <div class="tarjeta-3d revelar" id="inst-vestuarios">
+                    <input class="visualmente-oculto" type="checkbox" id="inst5">
+                    <label for="inst5">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/instalacion-vestuarios.svg" alt="" width="1000" height="660" loading="lazy">
+                                <strong>Vestuarios</strong>
+                                <small>Pulsa para descubrir ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Vestuarios</strong>
+                                <span>Una taquilla por jugador con su equipación y su número. Es el punto de encuentro antes de cada sesión.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+                <div class="tarjeta-3d revelar" id="inst-recuperacion">
+                    <input class="visualmente-oculto" type="checkbox" id="inst6">
+                    <label for="inst6">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/instalacion-recuperacion.svg" alt="" width="1000" height="660" loading="lazy">
+                                <strong>Recuperación</strong>
+                                <small>Pulsa para descubrir ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Recuperación</strong>
+                                <span>Baño de hielo, camilla de fisioterapia y rodillos para volver a la calma y descansar bien después del esfuerzo.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="seccion seccion-alterna" aria-labelledby="titulo-final">
+        <div class="contenedor revelar">
+            <h2 id="titulo-final">DESCUBRE TAMBIÉN <em>LOS EJERCICIOS.</em></h2>
+            <p class="introduccion">Las instalaciones son una propuesta conceptual creada para este proyecto.</p>
+            <div class="botones">
+                <a class="boton" href="entrenamientos.html">Ver entrenamientos</a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="pie">
+    <div class="contenedor pie-rejilla">
+        <div>
+            <img src="img/logo.svg" alt="FÚTBOL LAB" width="480" height="200">
+            <small>Proyecto educativo · Tema 07 · 2026. Ilustraciones SVG propias.</small>
+        </div>
+        <nav aria-label="Pie de página">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="entrenamientos.html">Entrenamientos</a></li>
+                <li><a href="instalaciones.html">Instalaciones</a></li>
+                <li><a href="movimiento.html">Guía de movimiento</a></li>
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+</body>
+</html>

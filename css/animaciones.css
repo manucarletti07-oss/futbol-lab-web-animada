@@ -1,0 +1,858 @@
+/* =================================================================
+   FÚTBOL LAB · css/animaciones.css
+   -----------------------------------------------------------------
+   Aquí está la tercera capa: el MOVIMIENTO. Tokens, transiciones y
+   @keyframes.
+
+   Cómo he organizado la accesibilidad (lo que llamo "opt-in"):
+   casi todo el movimiento está DENTRO de
+       @media (prefers-reduced-motion: no-preference) { ... }
+   O sea, solo se anima si la persona NO ha pedido en su sistema que
+   se reduzca el movimiento. Lo he hecho así, y no al revés (animar
+   todo y luego quitarlo con !important al final), por dos motivos:
+   1. Si un navegador no entiende esa media query, recibe la versión
+      quieta, que es la que no puede hacer daño a nadie.
+   2. Cada animación tiene al lado su versión reducida y se ve muy
+      claro qué pasa en cada caso.
+   Al final (sección 15) está lo poco que SÍ dejo con movimiento
+   reducido: fundidos cortos de opacidad. Avisan de que algo ha
+   cambiado pero no desplazan nada; lo que marea a las personas con
+   problemas vestibulares son los desplazamientos, los giros y los
+   zooms, no que algo aparezca suavemente.
+
+   Rendimiento: solo animo transform (y sus propiedades sueltas
+   translate, scale y rotate) y opacity. El navegador las hace en la
+   GPU, en la fase de "composite", sin volver a calcular el diseño ni
+   repintar, y así van fluidas también en el móvil. Lo comprobé con
+   DevTools → Rendering → Paint flashing: al pasar por una tarjeta
+   solo se repinta su imagen en el primer fotograma (cuando pasa a su
+   propia capa) y durante la animación ya no se repinta nada.
+   Hay dos excepciones y las explico donde salen: visibility en el
+   menú y el contador de números de la portada.
+   ================================================================= */
+
+
+/* -----------------------------------------------------------------
+   1. MIS TOKENS DE MOVIMIENTO
+   Igual que tengo una paleta de colores, tengo una "paleta" de
+   tiempos y curvas. Si todo usa los mismos valores, el movimiento
+   parece de la misma web y no efectos sueltos copiados de sitios
+   distintos.
+   ----------------------------------------------------------------- */
+:root {
+    /* DURACIONES ------------------------------------------------- */
+    /* 150 ms: para responder a un clic o un toque. Por debajo de unos
+       200 ms se nota como una respuesta inmediata, sin esperar. */
+    --dur-rapida: 150ms;
+    /* 300 ms: para cosas que se desplazan (menú, tarjetas, filtros).
+       Da tiempo a ver de dónde sale algo sin hacer esperar. */
+    --dur-media: 300ms;
+    /* 600 ms: para movimientos grandes que hay que poder seguir con
+       la vista (el giro 3D, la entrada del título). Probé el giro con
+       300 ms y parecía un parpadeo: no se entendía que había otra cara. */
+    --dur-lenta: 600ms;
+    /* 6 s: base de los bucles de fondo. Son lentos a propósito, para
+       que se vean "de reojo" y nunca molesten mientras se lee. */
+    --dur-bucle: 6s;
+    /* Retraso entre elementos que entran uno detrás de otro. */
+    --escalonado: 90ms;
+
+    /* CURVAS ----------------------------------------------------- */
+    /* Mi curva principal: arranca muy rápido y frena suave al final,
+       como cuando controlas el balón y lo "amortiguas". La uso en
+       todo lo que ENTRA o responde a lo que hace el usuario. */
+    --curva-entrada: cubic-bezier(.2, .8, .2, 1);
+    /* Al revés: empieza lento y acelera. Para lo que SALE (cerrar el
+       menú, irse de una página): se va sin llamar la atención. */
+    --curva-salida: cubic-bezier(.4, 0, 1, 1);
+    /* Igual al principio y al final: para los bucles de ida y vuelta,
+       así no hay tirones cuando cambian de sentido. */
+    --curva-suave: cubic-bezier(.45, 0, .55, 1);
+    /* "Rebote": el 1.56 hace que se pase un poco del final y vuelva.
+       Solo la uso en la bola del interruptor, para que parezca que
+       "encaja" como un interruptor de verdad. */
+    --curva-rebote: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+
+/* -----------------------------------------------------------------
+   2. TRANSICIONES DE TODO LO QUE SE PUEDE PULSAR
+   Botones, enlaces, tarjetas, filtros, controles e interruptor.
+   Mis reglas:
+   · :hover → siempre dentro de @media (hover: hover), porque en una
+     pantalla táctil el hover se queda "pegado" después de tocar.
+   · :focus-visible → el MISMO efecto que el hover, para que quien usa
+     el teclado tenga la misma respuesta que quien usa el ratón.
+   · :active → una pequeña "presión" que confirma el clic.
+   ----------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+
+    .boton,
+    .control,
+    .filtros label,
+    .favorito,
+    .interruptor,
+    .menu-boton {
+        /* Rápida y con la curva de entrada: el botón tiene que
+           responder al momento. */
+        transition: transform var(--dur-rapida) var(--curva-entrada);
+    }
+
+    .boton:active,
+    .control:active,
+    .filtros label:active,
+    .favorito:active,
+    .interruptor:active,
+    .menu-boton:active {
+        /* Encoger un 4 % parece un botón que se hunde. Probé más y
+           con un 6-8 % parecía que el diseño fallaba. */
+        transform: scale(.96);
+    }
+
+    /* Brillo de los botones: la franja que esperaba fuera (la dibujé
+       en estilos.css) cruza el botón de izquierda a derecha. Es más
+       lenta (600 ms) que la elevación del botón para que se vea
+       pasar. Sirve para dirigir la vista a la acción principal. */
+    .boton::after {
+        transition: transform var(--dur-lenta) var(--curva-entrada);
+    }
+
+    .boton:focus-visible::after {
+        transform: translateX(120%);
+    }
+
+    /* Enlaces de texto: al pulsarlos bajan un momento de opacidad. No
+       los encojo porque un texto que se hace pequeño "baila" y se
+       lee peor. */
+    .menu a,
+    .pie a,
+    .enlace-destacado {
+        transition: opacity var(--dur-rapida) var(--curva-entrada);
+    }
+
+    .menu a:active,
+    .pie a:active,
+    .enlace-destacado:active {
+        opacity: .65;
+    }
+
+    /* Subrayado de los enlaces: crece de izquierda a derecha, que es
+       el sentido en el que leemos. */
+    .menu a::after,
+    .pie a::after {
+        transition: transform var(--dur-media) var(--curva-entrada);
+    }
+
+    /* La flecha ↗ de los enlaces se adelanta 4 px, como diciendo
+       "esto te lleva a otro sitio". */
+    .flecha {
+        transition: transform var(--dur-rapida) var(--curva-entrada);
+    }
+
+    /* Las tarjetas usan 300 ms porque se mueven más que un botón y la
+       vista tiene que acompañarlas. */
+    .tarjeta {
+        transition: transform var(--dur-media) var(--curva-entrada);
+    }
+
+    /* La imagen de dentro hace zoom más despacio (600 ms) que la
+       tarjeta. Ese desfase da sensación de profundidad, como si la
+       imagen estuviera más lejos. */
+    .marco-imagen img {
+        transition: transform var(--dur-lenta) var(--curva-entrada);
+    }
+
+    /* Tarjetas: al pulsar se hunden solo un 2 % (menos que un botón
+       porque son grandes y un 4 % movería demasiados píxeles). En las
+       tarjetas 3D escalo el label y no la pieza que gira, para no
+       pisar su rotateY. */
+    .tarjeta-3d > label {
+        transition: transform var(--dur-rapida) var(--curva-entrada);
+    }
+
+    .tarjeta:active,
+    .tarjeta-3d > label:active {
+        transform: scale(.98);
+    }
+
+    /* Con el teclado, lo mismo que con el ratón. */
+    .boton:focus-visible {
+        transform: translateY(-3px);
+    }
+
+    .tarjeta:focus-visible {
+        transform: translateY(-6px);
+    }
+
+    .tarjeta:focus-visible .flecha,
+    .enlace-destacado:focus-visible .flecha {
+        transform: translate(4px, -4px);
+    }
+}
+
+/* Hover: solo con ratón o trackpad Y sin movimiento reducido. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+
+    .boton:hover {
+        /* Sube 3 px: invita a pulsar sin descolocar nada. */
+        transform: translateY(-3px);
+    }
+
+    .boton:hover::after {
+        transform: translateX(120%);
+    }
+
+    .boton:active {
+        /* Pongo :active después de :hover para que gane la presión
+           (tienen la misma especificidad, así que manda el orden). */
+        transform: translateY(0) scale(.96);
+    }
+
+    .tarjeta:hover {
+        /* Se inclina un poco en 3D (−3°) y sube: dice que la tarjeta
+           entera es un enlace y que se puede explorar. La perspectiva
+           va dentro del propio transform porque cada tarjeta va por
+           libre y no tiene un padre con perspective. */
+        transform: perspective(900px) rotateY(-3deg) translateY(-6px);
+    }
+
+    .tarjeta:active {
+        transform: perspective(900px) rotateY(-3deg) translateY(-2px) scale(.98);
+    }
+
+    .tarjeta:hover .marco-imagen img {
+        transform: scale(1.06);
+    }
+
+    .tarjeta:hover .flecha,
+    .enlace-destacado:hover .flecha {
+        transform: translate(4px, -4px);
+    }
+
+    /* Tarjeta 3D sin girar: al pasar el ratón se inclina un poco
+       (12° en Y y 4° en X) como pista de que puede darse la vuelta. */
+    .tarjeta-3d:not(:has(input:checked)):hover .interior-3d {
+        transform: rotateY(12deg) rotateX(4deg);
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   3. MENÚ DEL MÓVIL
+   El panel baja 12 px desde la cabecera mientras aparece. Lo hice
+   así a propósito: el menú "sale" del botón que lo abre y vuelve a
+   él, y así se entiende de dónde viene.
+   EXCEPCIÓN (visibility): visibility no se puede animar, cambia de
+   golpe. Al CERRAR le pongo un retraso igual a la duración (300 ms)
+   para que el panel no desaparezca antes de terminar el fundido. Al
+   ABRIR el retraso es 0 para que se vea desde el primer momento.
+   No gasta rendimiento porque no hay pasos intermedios.
+   ----------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+
+    .menu {
+        opacity: 0;
+        transform: translateY(-12px);
+        /* Al cerrar: curva de SALIDA (acelera y se va). */
+        transition:
+            opacity var(--dur-media) var(--curva-salida),
+            transform var(--dur-media) var(--curva-salida),
+            visibility 0s linear var(--dur-media);
+    }
+
+    .menu-check:checked ~ .menu {
+        opacity: 1;
+        transform: translateY(0);
+        /* Al abrir: curva de ENTRADA (llega rápido y frena). */
+        transition:
+            opacity var(--dur-media) var(--curva-entrada),
+            transform var(--dur-media) var(--curva-entrada),
+            visibility 0s;
+    }
+
+    /* Las rayas del icono se convierten en X con la misma duración
+       que el panel: icono y menú se mueven como una sola cosa. */
+    .icono-menu span {
+        transition:
+            transform var(--dur-media) var(--curva-entrada),
+            opacity var(--dur-rapida) var(--curva-entrada);
+    }
+
+    /* Desde 900 px el menú siempre se ve: quito el estado escondido
+       y la transición para que no parpadee al cargar o al cambiar el
+       tamaño de la ventana. */
+    @media (min-width: 900px) {
+        .menu,
+        .menu-check:checked ~ .menu {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   4. MICROINTERACCIONES
+   ----------------------------------------------------------------- */
+
+/* 4.1 FAVORITO ("me gusta"): el corazón late al marcarlo.
+   Animo la propiedad "scale" y no "transform" para que no choque con
+   el transform: scale(.96) de :active. Va igual de fluida porque el
+   navegador la trata como un transform. */
+@keyframes latido {
+    0%   { scale: 1; }
+    35%  { scale: 1.45; }   /* crece rápido: "¡hecho!" */
+    65%  { scale: .9; }     /* se encoge un poco, como un pulso */
+    100% { scale: 1; }
+}
+
+/* 4.2 DESPLEGABLE: las instrucciones caen 6 px mientras aparecen,
+   para unir el texto nuevo con el botón que lo ha abierto. */
+@keyframes desplegar {
+    from {
+        opacity: 0;
+        translate: 0 -6px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+/* 4.3 FILTRO: al cambiar de categoría, las tarjetas que vuelven a
+   salir suben 16 px y crecen un poco. Antes el cambio era de golpe y
+   costaba darse cuenta de que la lista había cambiado. No necesito
+   JavaScript: una animación vuelve a empezar sola cuando un elemento
+   pasa de display:none a verse. */
+@keyframes aparecer-filtro {
+    from {
+        opacity: 0;
+        translate: 0 16px;
+        scale: .97;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+        scale: 1;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+    .favorito input:checked + .corazon {
+        /* 600 ms: el latido necesita tiempo para parecer un pulso y
+           no un parpadeo. */
+        animation: latido var(--dur-lenta) var(--curva-entrada);
+    }
+
+    .ejercicio details[open] > :not(summary) {
+        animation: desplegar var(--dur-media) var(--curva-entrada) both;
+    }
+
+    /* La flecha del desplegable gira 90° (de ▸ a ▾). */
+    .ejercicio summary::before {
+        transition: transform var(--dur-media) var(--curva-entrada);
+    }
+
+    .ejercicio {
+        animation: aparecer-filtro var(--dur-media) var(--curva-entrada) both;
+    }
+
+    /* Escalonado por columnas: las tarjetas no llegan todas a la vez,
+       sino como una ola de izquierda a derecha. */
+    .ejercicio:nth-child(3n + 2) { animation-delay: calc(var(--escalonado) * 1); }
+    .ejercicio:nth-child(3n + 3) { animation-delay: calc(var(--escalonado) * 2); }
+
+    /* 4.4 TOOLTIP del favorito: aparece subiendo 6 px. Uso
+       "translate" para no mezclarlo con otros transform. Rápido
+       (150 ms) porque es información de ayuda: si tarda, molesta. */
+    .tooltip {
+        translate: 0 6px;
+        transition:
+            opacity var(--dur-rapida) var(--curva-entrada),
+            translate var(--dur-rapida) var(--curva-entrada);
+    }
+
+    .favorito:has(input:focus-visible) .tooltip {
+        translate: 0 0;
+    }
+
+    /* 4.5 INTERRUPTOR de pausa: la bola se desliza 18 px con la curva
+       de rebote para que "encaje" como uno de verdad. */
+    .interruptor-bola {
+        transition: transform var(--dur-media) var(--curva-rebote);
+    }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .favorito:hover .tooltip {
+        translate: 0 0;
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   5. ENTRADA DE CADA PÁGINA (@keyframes)
+   La etiqueta, el título, el texto y los botones de arriba aparecen
+   uno detrás de otro subiendo 24 px. El orden en que entran es el
+   orden en que se leen (--orden lo pongo en el HTML de cada uno), así
+   la animación lleva la vista hasta el botón principal.
+   "both" hace que antes de empezar ya esté invisible: así no se ve el
+   texto un instante y luego desaparece para animarse.
+   ----------------------------------------------------------------- */
+@keyframes entrada {
+    from {
+        opacity: 0;
+        translate: 0 24px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+/* Cuando el título ya ha entrado, la barra azul y roja de debajo de
+   la palabra destacada se "pinta" de izquierda a derecha. Lleva la
+   vista justo a la palabra más importante. */
+@keyframes subrayar {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .entrada {
+        animation: entrada var(--dur-lenta) var(--curva-entrada) both;
+        animation-delay: calc(var(--orden, 0) * var(--escalonado));
+    }
+
+    h1 em::after {
+        /* Empieza cuando el título ha terminado de entrar: su propio
+           retraso + los 600 ms que dura la entrada. */
+        animation: subrayar var(--dur-lenta) var(--curva-entrada) both;
+        animation-delay: calc(var(--orden, 0) * var(--escalonado) + var(--dur-lenta));
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   6. CONTADORES DE LA PORTADA (@property)
+   Los números (12 ejercicios, 06 instalaciones, 100 % fútbol) suben
+   desde 0 la primera vez que se carga la página. Es lo primero que
+   quiero que se vea de la academia, y el movimiento de los números
+   lleva la vista hasta ahí.
+   Cómo funciona: con @property registro --numero como un número
+   ENTERO. Así el navegador sabe ir de 0 a 12 pasando por 1, 2, 3...
+   (una variable normal no se puede animar: saltaría de golpe). Ese
+   número lo enseño con un contador de CSS en ::after.
+   EXCEPCIÓN justificada: aquí no animo transform ni opacity, el
+   texto se repinta en cada paso. Lo acepto porque son tres números
+   pequeños, solo una vez y durante 1,2 s.
+   El número de verdad está en el HTML (<span>). Solo lo escondo
+   cuando hay animación: con movimiento reducido o en un navegador
+   antiguo se ve ese número normal, sin contar.
+   ----------------------------------------------------------------- */
+@property --numero {
+    syntax: "<integer>";
+    initial-value: 0;
+    inherits: false;
+}
+
+@keyframes contar {
+    from { --numero: 0; }
+    to   { --numero: var(--fin); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .contador {
+        counter-reset: numero var(--numero);
+        animation: contar 1.2s var(--curva-entrada) both;
+        /* Empieza cuando ya han entrado el título y los botones. */
+        animation-delay: calc(var(--escalonado) * 5);
+    }
+
+    .contador span {
+        display: none;
+    }
+
+    /* decimal-leading-zero escribe "06" en vez de "6", como en un
+       marcador. */
+    .contador::after {
+        content: counter(numero, decimal-leading-zero);
+    }
+
+    .contador.porcentaje::after {
+        content: counter(numero) "%";
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   7. PORTADA: BUCLES DE FONDO (@keyframes)
+   Dan vida a la ilustración sin pedir atención: se mueven menos de
+   12 px y tardan varios segundos.
+   ----------------------------------------------------------------- */
+
+/* El jugador "respira": sube 9 px y vuelve. Con alternate va y viene
+   sin saltar de golpe al principio. */
+@keyframes respirar {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-9px); }
+}
+
+/* El sello flota y se balancea ±5°, como una insignia colgada. */
+@keyframes flotar {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50%      { transform: translateY(-12px) rotate(5deg); }
+}
+
+/* Cinta: muevo la pista un 50 % (lo que mide una copia del texto)
+   para que el bucle sea continuo. */
+@keyframes cinta {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+    .imagen-jugador {
+        animation: respirar calc(var(--dur-bucle) / 2) var(--curva-suave) infinite alternate;
+    }
+
+    .imagen-sello {
+        animation: flotar var(--dur-bucle) var(--curva-suave) infinite;
+    }
+
+    .cinta-pista {
+        /* Aquí NO uso mis curvas, uso linear: un texto que pasa en
+           bucle tiene que ir siempre a la misma velocidad; con una
+           curva frenaría y aceleraría en cada vuelta. 30 s para que se
+           pueda leer tranquilamente. */
+        animation: cinta calc(var(--dur-bucle) * 5) linear infinite;
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   8. PIZARRA TÁCTICA (@keyframes)
+   Es una jugada: los nuestros (azul y rojo) avanzan, los rivales
+   (blancos) retroceden y se cierran, y el balón va de un lado a otro
+   como un pase. Cada equipo tiene su propia animación porque aquí el
+   MOVIMIENTO es la información: se sabe quién ataca y quién defiende
+   por cómo se mueve.
+   ----------------------------------------------------------------- */
+@keyframes ataque {
+    0%, 100% { transform: translate(0, 0); }
+    40%      { transform: translate(25px, -14px); }  /* desmarque */
+    75%      { transform: translate(45px, 13px); }   /* ruptura */
+}
+
+@keyframes defensa {
+    0%, 100% { transform: translate(0, 0); }
+    45%      { transform: translate(-25px, 14px); }  /* repliegue */
+    75%      { transform: translate(-12px, -18px); } /* basculación */
+}
+
+/* El balón gira una vuelta entera mientras viaja: así parece que
+   rueda y no que se desliza. */
+@keyframes pase {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    55%      { transform: translate(70px, -21px) rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+    .jugador.nuestro {
+        animation: ataque var(--dur-bucle) var(--curva-suave) infinite;
+    }
+
+    .jugador.rival {
+        animation: defensa var(--dur-bucle) var(--curva-suave) infinite;
+    }
+
+    .balon {
+        /* Misma duración que las fichas para que el pase vaya a la
+           vez que los desmarques. */
+        animation: pase var(--dur-bucle) var(--curva-suave) infinite;
+    }
+
+    /* Retrasos NEGATIVOS: la animación empieza ya a medias, así las
+       fichas no se mueven todas a la vez como un bloque (no sería
+       real) y no hay que esperar a que arranquen. */
+    .j2, .j6 { animation-delay: -1s; }
+    .j3, .j7 { animation-delay: -2s; }
+    .j4, .j8 { animation-delay: -3s; }
+}
+
+/* Pausa de la pizarra (checkbox #pausa). animation-play-state deja
+   las fichas congeladas donde estén, sin volver al principio: así se
+   puede "parar la jugada" y mirarla con calma. */
+.campo-modulo:has(.pausa-check:checked) .jugador,
+.campo-modulo:has(.pausa-check:checked) .balon {
+    animation-play-state: paused;
+}
+
+
+/* -----------------------------------------------------------------
+   9. TRANSFORMACIONES 3D
+   ----------------------------------------------------------------- */
+
+/* 9.1 Tarjetas que giran (logos e instalaciones). La tarjeta girada
+   (rotateY 180°) está en estilos.css; aquí solo el viaje: 600 ms
+   para que se vea bien que la tarjeta da la vuelta y que detrás hay
+   más información. */
+@media (prefers-reduced-motion: no-preference) {
+    .interior-3d {
+        transition: transform var(--dur-lenta) var(--curva-entrada);
+    }
+}
+
+/* 9.2 Prisma de los tres pilares. Gira 120° (una cara), se para
+   un rato para poder leerla y pasa a la siguiente. Las paradas las
+   consigo repitiendo el mismo valor en dos porcentajes seguidos
+   (0 % y 17 %, 33 % y 50 %...). */
+@keyframes girar-prisma {
+    0%, 17%  { transform: rotateY(0deg); }
+    33%, 50% { transform: rotateY(-120deg); }
+    66%, 83% { transform: rotateY(-240deg); }
+    100%     { transform: rotateY(-360deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cubo {
+        /* 9 s = 3 caras × 3 s. Con la curva de entrada cada giro
+           arranca decidido y frena para "presentar" la cara. */
+        animation: girar-prisma calc(var(--dur-bucle) * 1.5) var(--curva-entrada) infinite;
+    }
+}
+
+.modulo-cubo:has(.pausa-check:checked) .cubo {
+    animation-play-state: paused;
+}
+
+
+/* -----------------------------------------------------------------
+   10. SKELETON MIENTRAS CARGAN LAS IMÁGENES
+   Las imágenes de las tarjetas cargan con loading="lazy" (solo
+   cuando te acercas a ellas). Mientras llegan, una franja clara pasa
+   por el hueco: indica que ahí se está cargando algo y que no es un
+   recuadro vacío. Cuando la imagen llega, la tapa.
+   Solo se repite 8 veces (unos 10 s): es tiempo de sobra para que
+   cargue, y así no dejo una animación infinita escondida detrás de
+   la imagen gastando batería.
+   ----------------------------------------------------------------- */
+@keyframes skeleton {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .marco-imagen::before {
+        /* linear: es una señal de "cargando", tiene que ir constante. */
+        animation: skeleton 1.2s linear 8;
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   11. APARECER AL HACER SCROLL
+   Uso animation-timeline: view(): la animación no avanza con el
+   tiempo sino con la posición del elemento en la pantalla. No
+   necesito JavaScript ni IntersectionObserver.
+   - entry 0 %  → empieza cuando el elemento asoma por abajo.
+   - cover 30 % → termina cuando ya ha subido un 30 %.
+   Todo va dentro de @supports: en los navegadores que no lo saben
+   hacer (Firefox, Safari antiguos) se ignora y el contenido se ve
+   igual, sin animación. Nunca se queda nada invisible.
+   Uso "translate" (no "transform") para no pisar el transform del
+   hover de las tarjetas: son propiedades diferentes y se suman.
+   ----------------------------------------------------------------- */
+@keyframes revelar {
+    from {
+        opacity: 0;
+        translate: 0 40px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        .revelar {
+            /* linear: en una animación que va con el scroll la "curva"
+               la pone el dedo del usuario; si añadiera otra, el
+               elemento no seguiría el gesto de forma natural. */
+            animation: revelar linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 30%;
+        }
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   12. BARRA DE PROGRESO DE LECTURA (animation-timeline: scroll())
+   Una línea azul y roja en el borde de la cabecera crece de 0 a
+   100 % según lo que he bajado en la página. Sirve para ORIENTARSE,
+   sobre todo en la guía de movimiento, que es larga: "¿cuánto me
+   queda?". Animo scaleX y no width para no recalcular el diseño, y
+   va en linear porque tiene que ir exacta con el scroll.
+   Sin soporte la barra sigue con display:none y no se pierde nada.
+   La dejo también con movimiento reducido porque solo se mueve
+   cuando la persona hace scroll y es una línea de 3 px: no hay nada
+   que se mueva solo y pueda marear.
+   ----------------------------------------------------------------- */
+@keyframes progreso {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@supports (animation-timeline: scroll()) {
+    .barra-progreso {
+        display: block;
+        animation: progreso linear both;
+        animation-timeline: scroll(root block);
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   13. ENTRADA DEL INTERRUPTOR DE PAUSA (@starting-style)
+   @starting-style dice cómo está algo "antes del primer fotograma":
+   el interruptor aparece subiendo 24 px y con un fundido al cargar
+   la página, sin necesidad de @keyframes. Lo hice para que se vea
+   UNA vez dónde está el botón de pausa, sobre todo para quien se
+   marea con el movimiento.
+   Uso "translate" para no mezclarlo con el scale(.96) de :active.
+   600 ms: llega un poco después que el resto de la página.
+   Sin soporte, el interruptor simplemente aparece sin animación.
+   ----------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    .interruptor {
+        transition:
+            transform var(--dur-rapida) var(--curva-entrada),
+            translate var(--dur-lenta) var(--curva-entrada),
+            opacity var(--dur-lenta) var(--curva-entrada);
+    }
+
+    @starting-style {
+        .interruptor {
+            opacity: 0;
+            translate: 0 24px;
+        }
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   14. CAMBIO DE PÁGINA (@view-transition)
+   Al ir de una página a otra el navegador hace un fundido en lugar
+   del "pantallazo" en blanco. La cabecera tiene su propio nombre de
+   transición: se queda quieta mientras cambia el contenido y así se
+   nota que sigo en la misma web.
+   Los navegadores que no lo tienen cambian de página normal.
+   ----------------------------------------------------------------- */
+@view-transition {
+    navigation: auto;
+}
+
+@keyframes salir-pagina {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes entrar-pagina {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.cabecera {
+    view-transition-name: cabecera;
+}
+
+::view-transition-old(root) {
+    animation: salir-pagina var(--dur-media) var(--curva-salida) both;
+}
+
+::view-transition-new(root) {
+    animation: entrar-pagina var(--dur-media) var(--curva-entrada) both;
+}
+
+
+/* -----------------------------------------------------------------
+   15. MOVIMIENTO REDUCIDO
+   Todo lo de arriba ya está apagado para estas personas porque está
+   dentro de "no-preference". Aquí solo:
+   a) Dejo fundidos de opacidad cortos en el menú: siguen avisando de
+      que algo se ha abierto, pero sin mover nada de sitio.
+   b) Quito el desplazamiento del cambio de página (si no, el
+      navegador lo haría igual).
+   c) Quito el scroll suave por si el navegador lo pone.
+   La información NUNCA depende de una animación: las tarjetas 3D
+   cambian de cara de golpe, el filtro funciona igual, los números
+   de la portada se ven ya con su valor y el prisma se queda quieto
+   en "TÉCNICA" (los tres pilares también están escritos al lado).
+   ----------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    .menu {
+        opacity: 0;
+        transition:
+            opacity var(--dur-rapida) linear,
+            visibility 0s linear var(--dur-rapida);
+    }
+
+    .menu-check:checked ~ .menu {
+        opacity: 1;
+        transition: opacity var(--dur-rapida) linear, visibility 0s;
+    }
+
+    /* El tooltip aparece con un fundido, sin subir. */
+    .tooltip {
+        transition: opacity var(--dur-rapida) linear;
+    }
+
+    @media (min-width: 900px) {
+        .menu {
+            opacity: 1;
+            transition: none;
+        }
+    }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   16. INTERRUPTOR "PAUSAR ANIMACIONES"
+   El checkbox #pausa-global está al principio del <body>, así que
+   con :has() el body sabe si está marcado y congela TODOS los bucles
+   de la web. Pongo la lista de bucles uno a uno (y no "*") a
+   propósito: si congelara también las entradas o el filtro, una
+   tarjeta se podría quedar parada a medias, invisible.
+   ----------------------------------------------------------------- */
+body:has(#pausa-global:checked) :is(
+    .imagen-jugador,
+    .imagen-sello,
+    .cinta-pista,
+    .jugador,
+    .balon,
+    .cubo
+),
+body:has(#pausa-global:checked) .marco-imagen::before {
+    animation-play-state: paused;
+}

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Catálogo de 12 ejercicios de fútbol de técnica, táctica y equipo con instrucciones y variantes.">
+    <title>Entrenamientos | FÚTBOL LAB</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <!-- LETRAS: las cargo desde Google Fonts con un enlace, así no tengo
+         que guardar archivos de fuentes en el proyecto. Los dos
+         "preconnect" abren la conexión con los servidores de Google
+         antes de pedir nada, para que las letras lleguen antes.
+         display=swap: mientras llegan se ve el texto con la letra del
+         sistema y después se cambia (nunca hay texto invisible). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;800&amp;family=Bebas+Neue&amp;display=swap">
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+</head>
+<body>
+
+<a class="salto" href="#contenido">Saltar al contenido</a>
+
+<!-- Interruptor para pausar todas las animaciones. Lo explico en el
+     comentario de index.html; es igual en las cuatro páginas. -->
+<input class="visualmente-oculto pausa-global" type="checkbox" id="pausa-global">
+<label class="interruptor" for="pausa-global">
+    <span class="interruptor-pista" aria-hidden="true"><span class="interruptor-bola"></span></span>
+    Pausar animaciones
+</label>
+
+<!-- La cabecera es igual en las cuatro páginas. Cuando cambio de
+     página (@view-transition) se queda quieta, porque le he dado su
+     propio view-transition-name, y solo cambia el contenido. -->
+<header class="cabecera">
+    <!-- Barra de progreso de lectura. Le pongo aria-hidden porque es
+         solo visual y el lector de pantalla no tiene que anunciarla;
+         crece con el scroll (animaciones.css, sección 12). -->
+    <div class="barra-progreso" aria-hidden="true"></div>
+    <div class="contenedor navegacion-principal">
+        <a class="logo" href="index.html">
+            <img src="img/logo.svg" alt="FÚTBOL LAB, ir al inicio" width="480" height="200">
+        </a>
+        <input class="visualmente-oculto menu-check" type="checkbox" id="menu">
+        <label class="menu-boton" for="menu">
+            <span class="icono-menu" aria-hidden="true"><span></span><span></span><span></span></span>
+            Menú
+        </label>
+        <nav class="menu" aria-label="Menú principal">
+            <a href="index.html">Inicio</a>
+            <a href="entrenamientos.html" aria-current="page">Entrenamientos</a>
+            <a href="instalaciones.html">Instalaciones</a>
+            <a href="movimiento.html">Guía de movimiento</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenido">
+
+    <!-- Parte de arriba de la página: misma entrada en cascada que la
+         portada, para que todas las páginas "arranquen" igual. -->
+    <section class="cabecera-pagina" aria-labelledby="titulo-pagina">
+        <div class="contenedor">
+            <span class="etiqueta entrada" style="--orden: 0">CATÁLOGO DE ENTRENAMIENTOS</span>
+            <h1 id="titulo-pagina" class="entrada" style="--orden: 1">MEJORA CADA <em>DETALLE DEL JUEGO.</em></h1>
+            <p class="introduccion entrada" style="--orden: 2">
+                Doce ejercicios divididos en técnica, táctica y trabajo colectivo.
+                Filtra por categoría, abre las instrucciones y guarda tus favoritos.
+            </p>
+            <div class="botones entrada" style="--orden: 3">
+                <a class="boton" href="#catalogo">Ver ejercicios ↓</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="seccion" id="catalogo" aria-labelledby="titulo-catalogo">
+        <div class="contenedor">
+            <h2 id="titulo-catalogo">EXPLORA LOS <em>ENTRENAMIENTOS.</em></h2>
+
+            <!-- FILTRO SIN JAVASCRIPT. Los cuatro radio tienen el mismo
+                 "name", así que solo puede haber uno marcado. Los pongo
+                 antes de .filtros y .ejercicios para poder usar en el CSS
+                 el selector de hermanos (~) y esconder las tarjetas de las
+                 otras categorías. Las tarjetas que vuelven a salir se animan
+                 (@keyframes aparecer-filtro) para que se note el cambio. -->
+            <div class="catalogo">
+                <input class="visualmente-oculto" type="radio" name="categoria" id="todos" checked>
+                <input class="visualmente-oculto" type="radio" name="categoria" id="tecnica">
+                <input class="visualmente-oculto" type="radio" name="categoria" id="tactica">
+                <input class="visualmente-oculto" type="radio" name="categoria" id="equipo">
+
+                <div class="filtros">
+                    <label for="todos">Todos (12)</label>
+                    <label for="tecnica">⚽ Técnica (4)</label>
+                    <label for="tactica">🧠 Táctica (4)</label>
+                    <label for="equipo">🤝 Equipo (4)</label>
+                </div>
+
+                <!-- Cada tarjeta tiene tres microinteracciones:
+                     · <details>: la flecha gira y el texto cae al abrirlo.
+                     · Favorito: un checkbox escondido y un corazón que late
+                       al marcarlo. El lector de pantalla dice "Favorito,
+                       casilla, marcada", así que no depende solo del color.
+                     · Tooltip: al pasar el ratón o llegar con el teclado
+                       explica para qué sirve el corazón. -->
+                <div class="rejilla rejilla-tres ejercicios">
+
+                    <article class="tarjeta ejercicio tecnica" id="ejercicio-01">
+                        <div class="marco-imagen"><img src="img/ejercicio-01.svg" alt="Esquema del ejercicio Control orientado" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÉCNICA</span>
+                            <h3>Control orientado</h3>
+                            <p>10 min · Principiante</p>
+                            <p>Aprende a dirigir el primer toque hacia un espacio libre.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> balón y cuatro conos.</p>
+                                <p>Por parejas, recibe el balón y oriéntalo hacia un lateral. Devuelve el pase con el segundo toque.</p>
+                                <p><strong>Variante:</strong> utiliza la pierna menos hábil.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tecnica" id="ejercicio-02">
+                        <div class="marco-imagen"><img src="img/ejercicio-02.svg" alt="Esquema del ejercicio Pases en triángulo" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÉCNICA</span>
+                            <h3>Pases en triángulo</h3>
+                            <p>12 min · Principiante</p>
+                            <p>Combina precisión y desplazamiento después de pasar el balón.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> tres conos y un balón.</p>
+                                <p>Forma un triángulo con tres jugadores. Después de pasar, corre a la posición del receptor.</p>
+                                <p><strong>Variante:</strong> limita el ejercicio a un toque.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tecnica" id="ejercicio-03">
+                        <div class="marco-imagen"><img src="img/ejercicio-03.svg" alt="Esquema del ejercicio Conducción y regate" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÉCNICA</span>
+                            <h3>Conducción y regate</h3>
+                            <p>15 min · Intermedio</p>
+                            <p>Trabaja los cambios de dirección y de ritmo.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> seis conos y balón.</p>
+                                <p>Realiza un zigzag entre conos alternando ambos pies. Acelera cuando termines el recorrido.</p>
+                                <p><strong>Variante:</strong> añade un defensor pasivo.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tecnica" id="ejercicio-04">
+                        <div class="marco-imagen"><img src="img/ejercicio-04.svg" alt="Esquema del ejercicio Finalización rápida" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÉCNICA</span>
+                            <h3>Finalización rápida</h3>
+                            <p>15 min · Intermedio</p>
+                            <p>Mejora la velocidad de ejecución antes del disparo.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> portería y balones.</p>
+                                <p>Recibe de espaldas, controla, gira y remata en un máximo de tres toques.</p>
+                                <p><strong>Variante:</strong> finaliza con ambas piernas.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tactica" id="ejercicio-05">
+                        <div class="marco-imagen"><img src="img/ejercicio-05.svg" alt="Esquema del ejercicio Rondo 4 contra 2" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÁCTICA</span>
+                            <h3>Rondo 4 contra 2</h3>
+                            <p>15 min · Intermedio</p>
+                            <p>Circulación rápida del balón y ocupación del espacio.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> seis jugadores y balón.</p>
+                                <p>Cuatro jugadores mantienen la posesión y dos intentan interceptar los pases.</p>
+                                <p><strong>Variante:</strong> máximo dos toques.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tactica" id="ejercicio-06">
+                        <div class="marco-imagen"><img src="img/ejercicio-06.svg" alt="Esquema del ejercicio Desmarque de ruptura" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÁCTICA</span>
+                            <h3>Desmarque de ruptura</h3>
+                            <p>12 min · Intermedio</p>
+                            <p>Aprende a atacar el espacio a la espalda del defensor.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> conos y balones.</p>
+                                <p>Amaga un movimiento de apoyo, cambia de dirección y acelera para recibir un pase al espacio.</p>
+                                <p><strong>Variante:</strong> incorpora un defensor real.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tactica" id="ejercicio-07">
+                        <div class="marco-imagen"><img src="img/ejercicio-07.svg" alt="Esquema del ejercicio Presión tras pérdida" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÁCTICA</span>
+                            <h3>Presión tras pérdida</h3>
+                            <p>18 min · Avanzado</p>
+                            <p>Entrena la reacción del equipo cuando pierde la posesión.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> petos, conos y balón.</p>
+                                <p>Cuando un equipo pierde el balón, dispone de cinco segundos para recuperarlo.</p>
+                                <p><strong>Variante:</strong> reduce el espacio de juego.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio tactica" id="ejercicio-08">
+                        <div class="marco-imagen"><img src="img/ejercicio-08.svg" alt="Esquema del ejercicio Basculación defensiva" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">TÁCTICA</span>
+                            <h3>Basculación defensiva</h3>
+                            <p>15 min · Avanzado</p>
+                            <p>Coordina los desplazamientos defensivos del equipo.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> petos y conos.</p>
+                                <p>Coloca cuatro defensores en línea y desplázalos hacia el lado del balón conservando las distancias.</p>
+                                <p><strong>Variante:</strong> añade cambios de orientación.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio equipo" id="ejercicio-09">
+                        <div class="marco-imagen"><img src="img/ejercicio-09.svg" alt="Esquema del ejercicio Posesión 5 contra 5" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">EQUIPO</span>
+                            <h3>Posesión 5 contra 5</h3>
+                            <p>20 min · Intermedio</p>
+                            <p>Mejora los desmarques y la creación de líneas de pase.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> diez jugadores, petos y balón.</p>
+                                <p>El jugador con balón no puede moverse. Sus compañeros deben buscar apoyos en un espacio reducido.</p>
+                                <p><strong>Variante:</strong> diez pases suman un punto.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio equipo" id="ejercicio-10">
+                        <div class="marco-imagen"><img src="img/ejercicio-10.svg" alt="Esquema del ejercicio Ataque por bandas" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">EQUIPO</span>
+                            <h3>Ataque por bandas</h3>
+                            <p>18 min · Intermedio</p>
+                            <p>Coordinación entre extremo, lateral y delantero.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> portería, petos y balones.</p>
+                                <p>Inicia la jugada por el centro, juega hacia la banda y finaliza con un centro y remate.</p>
+                                <p><strong>Variante:</strong> cambia de orientación primero.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio equipo" id="ejercicio-11">
+                        <div class="marco-imagen"><img src="img/ejercicio-11.svg" alt="Esquema del ejercicio Transición 3 contra 2" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">EQUIPO</span>
+                            <h3>Transición 3 contra 2</h3>
+                            <p>15 min · Avanzado</p>
+                            <p>Aprovecha la superioridad numérica para finalizar.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> cinco jugadores y portería.</p>
+                                <p>Tres atacantes juegan contra dos defensores. Deben finalizar antes de que llegue un tercer defensor.</p>
+                                <p><strong>Variante:</strong> máximo ocho segundos por ataque.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="tarjeta ejercicio equipo" id="ejercicio-12">
+                        <div class="marco-imagen"><img src="img/ejercicio-12.svg" alt="Esquema del ejercicio Partido con comodines" width="1000" height="660" loading="lazy"></div>
+                        <div class="contenido-tarjeta">
+                            <span class="etiqueta">EQUIPO</span>
+                            <h3>Partido con comodines</h3>
+                            <p>20 min · Principiante</p>
+                            <p>Conserva el balón con superioridad numérica.</p>
+                            <details>
+                                <summary>Ver instrucciones</summary>
+                                <p><strong>Material:</strong> petos, conos y balón.</p>
+                                <p>Dos equipos compiten con dos comodines exteriores que ayudan al equipo con posesión.</p>
+                                <p><strong>Variante:</strong> comodines a un toque.</p>
+                            </details>
+                            <label class="favorito">
+                                <input class="visualmente-oculto" type="checkbox">
+                                <span class="corazon" aria-hidden="true">♥</span>
+                                Favorito
+                                <span class="tooltip">Guárdalo para tu plan semanal</span>
+                            </label>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRISMA 3D DE LOS TRES PILARES. Gira y enseña una cara cada
+         3 s. Los tres pilares son los mismos que los tres filtros del
+         catálogo, así el movimiento resume cómo está organizada la
+         página. Tiene su propio botón de pausa. -->
+    <section class="seccion seccion-alterna" aria-labelledby="titulo-pilares">
+        <div class="contenedor dos-columnas">
+            <div class="revelar">
+                <span class="etiqueta">EXPERIENCIA 3D</span>
+                <h2 id="titulo-pilares">LOS TRES <em>PILARES.</em></h2>
+                <p>
+                    Técnica (control y pase), táctica (decidir mejor) y equipo
+                    (apoyos y juego colectivo) forman parte de cada sesión.
+                </p>
+            </div>
+
+            <div class="modulo-cubo revelar">
+                <input class="visualmente-oculto pausa-check" type="checkbox" id="pausa-cubo">
+                <!-- aria-hidden porque lo que pone el prisma ya está escrito
+                     en el párrafo de al lado; así no se lee dos veces. -->
+                <div class="escena-cubo" aria-hidden="true">
+                    <div class="cubo">
+                        <div class="cara-cubo cara-cubo-a">⚽<strong>TÉCNICA</strong><span>Control y pase</span></div>
+                        <div class="cara-cubo cara-cubo-b">🧠<strong>TÁCTICA</strong><span>Decidir mejor</span></div>
+                        <div class="cara-cubo cara-cubo-c">🤝<strong>EQUIPO</strong><span>Apoyos y juego</span></div>
+                    </div>
+                </div>
+                <label class="control" for="pausa-cubo">
+                    <span aria-hidden="true">⏯</span>
+                    <span class="texto-pausar">Pausar el prisma</span>
+                    <span class="texto-reanudar">Reanudar el prisma</span>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLAN SEMANAL: tarjetas de información que aparecen al hacer scroll. -->
+    <section class="seccion" aria-labelledby="titulo-plan">
+        <div class="contenedor">
+            <span class="etiqueta">PLAN SEMANAL</span>
+            <h2 id="titulo-plan">ORGANIZA TU <em>ENTRENAMIENTO.</em></h2>
+            <div class="rejilla rejilla-tres">
+                <article class="tarjeta revelar">
+                    <h3>Lunes · Técnica</h3>
+                    <p>Control orientado y pases en triángulo.</p>
+                    <strong>22 minutos</strong>
+                </article>
+                <article class="tarjeta revelar">
+                    <h3>Miércoles · Táctica</h3>
+                    <p>Rondo 4 contra 2 y desmarque de ruptura.</p>
+                    <strong>27 minutos</strong>
+                </article>
+                <article class="tarjeta revelar">
+                    <h3>Viernes · Equipo</h3>
+                    <p>Posesión 5 contra 5 y transición 3 contra 2.</p>
+                    <strong>35 minutos</strong>
+                </article>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="pie">
+    <div class="contenedor pie-rejilla">
+        <div>
+            <img src="img/logo.svg" alt="FÚTBOL LAB" width="480" height="200">
+            <small>Proyecto educativo · Tema 07 · 2026. Ilustraciones SVG propias.</small>
+        </div>
+        <nav aria-label="Pie de página">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="entrenamientos.html">Entrenamientos</a></li>
+                <li><a href="instalaciones.html">Instalaciones</a></li>
+                <li><a href="movimiento.html">Guía de movimiento</a></li>
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport: sin esta línea el móvil haría como si fuera una pantalla
+         de ordenador y mi diseño mobile first no se aplicaría. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="FÚTBOL LAB: academia digital de fútbol con ejercicios de técnica, táctica y trabajo en equipo.">
+    <title>Inicio | FÚTBOL LAB</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <!-- LETRAS: las cargo desde Google Fonts con un enlace, así no tengo
+         que guardar archivos de fuentes en el proyecto. Los dos
+         "preconnect" abren la conexión con los servidores de Google
+         antes de pedir nada, para que las letras lleguen antes.
+         display=swap: mientras llegan se ve el texto con la letra del
+         sistema y después se cambia (nunca hay texto invisible). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;800&amp;family=Bebas+Neue&amp;display=swap">
+    <!-- Cargo primero el diseño (estructura y estados) y después el
+         movimiento, porque las animaciones se apoyan en esos estados. -->
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+</head>
+<body>
+
+<!-- Es lo primero que coge el foco: sirve para saltarse el menú con el teclado. -->
+<a class="salto" href="#contenido">Saltar al contenido</a>
+
+<!-- INTERRUPTOR PARA PAUSAR LAS ANIMACIONES (microinteracción).
+     Pongo el checkbox al principio del body para que el CSS pueda
+     preguntar body:has(#pausa-global:checked) y parar todos los bucles
+     de la página. El label es el botón que se ve (abajo a la derecha);
+     el checkbox está escondido pero se puede usar con el teclado y el
+     lector de pantalla lo anuncia como una casilla. -->
+<input class="visualmente-oculto pausa-global" type="checkbox" id="pausa-global">
+<label class="interruptor" for="pausa-global">
+    <span class="interruptor-pista" aria-hidden="true"><span class="interruptor-bola"></span></span>
+    Pausar animaciones
+</label>
+
+<header class="cabecera">
+    <!-- Barra de progreso de lectura. Le pongo aria-hidden porque es
+         solo visual y el lector de pantalla no tiene que anunciarla;
+         crece con el scroll (animaciones.css, sección 12). -->
+    <div class="barra-progreso" aria-hidden="true"></div>
+    <div class="contenedor navegacion-principal">
+        <a class="logo" href="index.html">
+            <img src="img/logo.svg" alt="FÚTBOL LAB, ir al inicio" width="480" height="200">
+        </a>
+
+        <!-- MENÚ DEL MÓVIL sin JavaScript: el checkbox guarda si está
+             abierto y el label es el botón hamburguesa. Las tres
+             <span> del icono se convierten en una X al abrirlo. -->
+        <input class="visualmente-oculto menu-check" type="checkbox" id="menu">
+        <label class="menu-boton" for="menu">
+            <span class="icono-menu" aria-hidden="true"><span></span><span></span><span></span></span>
+            Menú
+        </label>
+
+        <nav class="menu" aria-label="Menú principal">
+            <!-- aria-current le dice al lector de pantalla en qué página
+                 estoy, y el CSS lo usa para dejar ese enlace subrayado. -->
+            <a href="index.html" aria-current="page">Inicio</a>
+            <a href="entrenamientos.html">Entrenamientos</a>
+            <a href="instalaciones.html">Instalaciones</a>
+            <a href="movimiento.html">Guía de movimiento</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenido">
+
+    <!-- PORTADA. Lo que tiene la clase "entrada" aparece uno detrás de
+         otro al cargar (@keyframes entrada). Con --orden le digo a cada
+         uno su turno: el CSS lo multiplica por 90 ms para calcular el
+         retraso, y así la vista baja de la etiqueta al botón en el mismo
+         orden en que se lee. -->
+    <section class="portada" aria-labelledby="titulo-portada">
+        <div class="contenedor portada-grid">
+            <div>
+                <span class="etiqueta entrada" style="--orden: 0">ACADEMIA DIGITAL DE FÚTBOL</span>
+                <h1 id="titulo-portada" class="entrada" style="--orden: 1">EL FÚTBOL <em>SE VIVE.</em></h1>
+                <p class="introduccion entrada" style="--orden: 2">
+                    Entrena técnica, aprende táctica y mejora tus decisiones
+                    con una experiencia visual llena de movimiento.
+                </p>
+
+                <div class="botones entrada" style="--orden: 3">
+                    <a class="boton" href="entrenamientos.html">Empezar a entrenar</a>
+                    <a class="boton boton-secundario" href="instalaciones.html">Ver instalaciones</a>
+                </div>
+
+                <!-- Los números cuentan desde 0 (@property en animaciones.css).
+                     El número de verdad está en el <span>: es el que se ve
+                     con movimiento reducido o en un navegador antiguo. -->
+                <ul class="estadisticas entrada" style="--orden: 4">
+                    <li><strong class="contador" style="--fin: 12"><span>12</span></strong> ejercicios</li>
+                    <li><strong class="contador" style="--fin: 6"><span>06</span></strong> instalaciones</li>
+                    <li><strong class="contador porcentaje" style="--fin: 100"><span>100%</span></strong> fútbol</li>
+                </ul>
+            </div>
+
+            <!-- Escena en tres capas. El jugador "respira" y el sello flota
+                 (bucles lentos en animaciones.css). El estadio y el sello
+                 son solo decoración: les dejo el alt vacío para que el
+                 lector de pantalla no los lea. -->
+            <div class="escena-portada">
+                <img class="imagen-estadio" src="img/hero-estadio.svg" alt="" width="1000" height="660">
+                <img class="imagen-jugador" src="img/hero-jugador.svg" alt="Futbolista de FÚTBOL LAB con el balón" width="600" height="700">
+                <img class="imagen-sello" src="img/logo-circular.svg" alt="" width="700" height="700">
+            </div>
+        </div>
+    </section>
+
+    <!-- CINTA DE PALABRAS. Repito el texto dos veces para que el bucle
+         no dé saltos. Le pongo aria-hidden porque es decoración y el
+         lector de pantalla leería lo mismo dos veces. -->
+    <div class="cinta" aria-hidden="true">
+        <div class="cinta-pista">
+            <span>ENTRENA · MEJORA · COMPITE · TÉCNICA · TÁCTICA · EQUIPO ·</span>
+            <span>ENTRENA · MEJORA · COMPITE · TÉCNICA · TÁCTICA · EQUIPO ·</span>
+        </div>
+    </div>
+
+    <!-- SERVICIOS. Cada tarjeta es un enlace entero: al pasar el ratón
+         se inclina en 3D y sube, para que se note que se puede pulsar.
+         Con la clase "revelar" aparecen al hacer scroll. -->
+    <section class="seccion" aria-labelledby="titulo-servicios">
+        <div class="contenedor">
+            <span class="etiqueta">NUESTROS SERVICIOS</span>
+            <h2 id="titulo-servicios">TODO PARA <em>MEJORAR TU JUEGO.</em></h2>
+
+            <div class="rejilla rejilla-cuatro">
+                <a class="tarjeta revelar" href="entrenamientos.html#catalogo">
+                    <span class="icono-servicio" aria-hidden="true">⚽</span>
+                    <h3>Técnica</h3>
+                    <p>Control, pase y conducción con objetivos claros. <span class="flecha" aria-hidden="true">↗</span></p>
+                </a>
+                <a class="tarjeta revelar" href="entrenamientos.html#catalogo">
+                    <span class="icono-servicio" aria-hidden="true">🧠</span>
+                    <h3>Táctica</h3>
+                    <p>Aprende a leer las jugadas y a decidir mejor. <span class="flecha" aria-hidden="true">↗</span></p>
+                </a>
+                <a class="tarjeta revelar" href="entrenamientos.html#catalogo">
+                    <span class="icono-servicio" aria-hidden="true">🤝</span>
+                    <h3>Equipo</h3>
+                    <p>Comunicación, apoyos y juego colectivo. <span class="flecha" aria-hidden="true">↗</span></p>
+                </a>
+                <a class="tarjeta revelar" href="movimiento.html">
+                    <span class="icono-servicio" aria-hidden="true">★</span>
+                    <h3>Método</h3>
+                    <p>Descubre cómo y por qué se mueve esta web. <span class="flecha" aria-hidden="true">↗</span></p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PIZARRA TÁCTICA. Las fichas son <span> colocados con
+         porcentajes dentro del campo, así se adaptan a cualquier ancho.
+         "nuestro" es nuestro equipo (azul y rojo) y "rival" el otro
+         (blanco). El checkbox #pausa cambia animation-play-state para
+         poder congelar la jugada y mirarla. -->
+    <section class="seccion seccion-alterna" aria-labelledby="titulo-pizarra">
+        <div class="contenedor dos-columnas">
+            <div class="revelar">
+                <span class="etiqueta">PIZARRA INTERACTIVA</span>
+                <h2 id="titulo-pizarra">UNA JUGADA <em>EN MOVIMIENTO.</em></h2>
+                <p>
+                    Nuestros jugadores (azul y rojo) se desmarcan hacia delante, los rivales
+                    (blancos) se repliegan y el balón simula un pase. El movimiento
+                    explica la jugada mejor que un dibujo estático.
+                </p>
+                <p>Puedes congelar la jugada en cualquier momento para estudiarla.</p>
+            </div>
+
+            <div class="campo-modulo revelar">
+                <input class="visualmente-oculto pausa-check" type="checkbox" id="pausa">
+
+                <!-- Con role="img" y aria-label el lector de pantalla lee el
+                     campo como una imagen con su descripción, en vez de
+                     leer ocho números sueltos. -->
+                <div class="campo" role="img" aria-label="Pizarra con cuatro jugadores de nuestro equipo, cuatro rivales y un balón">
+                    <div class="linea-media"></div>
+                    <div class="circulo-central"></div>
+                    <div class="area area-izquierda"></div>
+                    <div class="area area-derecha"></div>
+
+                    <span class="jugador nuestro j1">10</span>
+                    <span class="jugador nuestro j2">7</span>
+                    <span class="jugador nuestro j3">9</span>
+                    <span class="jugador nuestro j4">8</span>
+                    <span class="jugador rival j5">4</span>
+                    <span class="jugador rival j6">5</span>
+                    <span class="jugador rival j7">2</span>
+                    <span class="jugador rival j8">6</span>
+                    <span class="balon">⚽</span>
+                </div>
+
+                <!-- El texto cambia según el estado ("Pausar" o "Reanudar")
+                     para que diga lo que va a pasar al pulsarlo. -->
+                <label class="control" for="pausa">
+                    <span aria-hidden="true">⏯</span>
+                    <span class="texto-pausar">Pausar jugada</span>
+                    <span class="texto-reanudar">Reanudar jugada</span>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <!-- EJERCICIOS DESTACADOS. Al pasar el ratón la imagen hace zoom
+         dentro de su marco, más despacio que la tarjeta, para que dé
+         sensación de profundidad. Mientras carga se ve el "skeleton". -->
+    <section class="seccion" aria-labelledby="titulo-ejercicios">
+        <div class="contenedor">
+            <div class="cabecera-seccion">
+                <div>
+                    <span class="etiqueta">ENTRENAMIENTOS</span>
+                    <h2 id="titulo-ejercicios">ENTRENA COMO <em>JUEGAS.</em></h2>
+                </div>
+                <a class="enlace-destacado" href="entrenamientos.html">
+                    Ver los 12 ejercicios <span class="flecha" aria-hidden="true">↗</span>
+                </a>
+            </div>
+
+            <div class="rejilla rejilla-tres">
+                <a class="tarjeta tarjeta-imagen revelar" href="entrenamientos.html#ejercicio-01">
+                    <div class="marco-imagen"><img src="img/ejercicio-01.svg" alt="" width="1000" height="660" loading="lazy"></div>
+                    <h3>Control orientado</h3>
+                    <p>10 minutos · Principiante</p>
+                </a>
+                <a class="tarjeta tarjeta-imagen revelar" href="entrenamientos.html#ejercicio-05">
+                    <div class="marco-imagen"><img src="img/ejercicio-05.svg" alt="" width="1000" height="660" loading="lazy"></div>
+                    <h3>Rondo 4 contra 2</h3>
+                    <p>15 minutos · Intermedio</p>
+                </a>
+                <a class="tarjeta tarjeta-imagen revelar" href="entrenamientos.html#ejercicio-09">
+                    <div class="marco-imagen"><img src="img/ejercicio-09.svg" alt="" width="1000" height="660" loading="lazy"></div>
+                    <h3>Posesión 5 contra 5</h3>
+                    <p>20 minutos · Intermedio</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSTALACIONES DESTACADAS. Son las mismas tarjetas-enlace que
+         las de los ejercicios (zoom de la imagen y suben). Llevan a
+         instalaciones.html, donde están las seis con giro 3D. -->
+    <section class="seccion seccion-alterna" aria-labelledby="titulo-instalaciones">
+        <div class="contenedor">
+            <div class="cabecera-seccion">
+                <div>
+                    <span class="etiqueta">NUESTRAS INSTALACIONES</span>
+                    <h2 id="titulo-instalaciones">ESPACIOS PARA <em>CRECER.</em></h2>
+                </div>
+                <a class="enlace-destacado" href="instalaciones.html">
+                    Ver las 6 instalaciones <span class="flecha" aria-hidden="true">↗</span>
+                </a>
+            </div>
+
+            <div class="rejilla rejilla-tres">
+                <a class="tarjeta tarjeta-imagen revelar" href="instalaciones.html#inst-campo">
+                    <div class="marco-imagen"><img src="img/instalacion-campo.svg" alt="" width="1000" height="660" loading="lazy"></div>
+                    <h3>Campo principal</h3>
+                    <p>Césped natural, focos y banquillos.</p>
+                </a>
+                <a class="tarjeta tarjeta-imagen revelar" href="instalaciones.html#inst-gimnasio">
+                    <div class="marco-imagen"><img src="img/instalacion-gimnasio.svg" alt="" width="1000" height="660" loading="lazy"></div>
+                    <h3>Gimnasio</h3>
+                    <p>Fuerza, carrera y prevención de lesiones.</p>
+                </a>
+                <a class="tarjeta tarjeta-imagen revelar" href="instalaciones.html#inst-vestuarios">
+                    <div class="marco-imagen"><img src="img/instalacion-vestuarios.svg" alt="" width="1000" height="660" loading="lazy"></div>
+                    <h3>Vestuarios</h3>
+                    <p>Taquillas con la equipación de cada jugador.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- IDENTIDAD: MIS LOGOS EN TARJETAS 3D. Cada tarjeta es un
+         checkbox + label: al pulsarla (o con la barra espaciadora) gira
+         180° y por detrás dice para qué uso ese logo. Elegí el giro
+         porque la información extra está "detrás", como cuando le das
+         la vuelta a un cromo. -->
+    <section class="seccion" aria-labelledby="titulo-identidad">
+        <div class="contenedor">
+            <span class="etiqueta">NUESTRA IDENTIDAD</span>
+            <h2 id="titulo-identidad">UNA MARCA. <em>UN EQUIPO.</em></h2>
+            <p>Pulsa cada logotipo para darle la vuelta y ver dónde se utiliza.</p>
+
+            <div class="rejilla rejilla-cuatro">
+                <div class="tarjeta-3d revelar">
+                    <input class="visualmente-oculto" type="checkbox" id="logo1">
+                    <label for="logo1">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/logo-escudo.svg" alt="" loading="lazy">
+                                <strong>Escudo oficial</strong>
+                                <small>Pulsa para girar ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Escudo oficial</strong>
+                                <span>Equipaciones, bandera del club y documentos oficiales.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="tarjeta-3d revelar">
+                    <input class="visualmente-oculto" type="checkbox" id="logo2">
+                    <label for="logo2">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/logo-camiseta.svg" alt="" loading="lazy">
+                                <strong>Equipación</strong>
+                                <small>Pulsa para girar ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Equipación</strong>
+                                <span>La marca sobre la camiseta azul marino de juego.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="tarjeta-3d revelar">
+                    <input class="visualmente-oculto" type="checkbox" id="logo3">
+                    <label for="logo3">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/logo-balon.svg" alt="" loading="lazy">
+                                <strong>Balón</strong>
+                                <small>Pulsa para girar ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Balón</strong>
+                                <span>Material de entrenamiento y premios del campus.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="tarjeta-3d revelar">
+                    <input class="visualmente-oculto" type="checkbox" id="logo4">
+                    <label for="logo4">
+                        <span class="interior-3d">
+                            <span class="cara-3d">
+                                <img src="img/logo-circular.svg" alt="" loading="lazy">
+                                <strong>Insignia circular</strong>
+                                <small>Pulsa para girar ↻</small>
+                            </span>
+                            <span class="cara-3d trasera-3d">
+                                <strong>Insignia circular</strong>
+                                <span>Redes sociales, pegatinas y sello de la portada.</span>
+                                <small>Pulsa para volver ↶</small>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final de la portada: mando al catálogo y a la guía. -->
+    <section class="seccion" aria-labelledby="titulo-final">
+        <div class="contenedor revelar">
+            <h2 id="titulo-final">¿LISTO PARA <em>SALTAR AL CAMPO?</em></h2>
+            <p class="introduccion">Doce ejercicios con instrucciones, material y variantes.</p>
+            <div class="botones">
+                <a class="boton" href="entrenamientos.html">Ver entrenamientos</a>
+                <a class="boton boton-secundario" href="movimiento.html">Leer la guía de movimiento</a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="pie">
+    <div class="contenedor pie-rejilla">
+        <div>
+            <img src="img/logo.svg" alt="FÚTBOL LAB" width="480" height="200">
+            <small>Proyecto educativo · Tema 07 · 2026. Ilustraciones SVG propias.</small>
+        </div>
+        <nav aria-label="Pie de página">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="entrenamientos.html">Entrenamientos</a></li>
+                <li><a href="instalaciones.html">Instalaciones</a></li>
+                <li><a href="movimiento.html">Guía de movimiento</a></li>
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+</body>
+</html>

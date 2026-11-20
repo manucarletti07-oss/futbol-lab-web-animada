@@ -1,0 +1,1425 @@
+/* =================================================================
+   FÚTBOL LAB · css/estilos.css
+   -----------------------------------------------------------------
+   En este archivo he puesto las dos primeras capas del proyecto:
+   - Capa 1, ESTRUCTURA: colores, letras, maquetación y responsive.
+   - Capa 2, INTERACCIÓN: los ESTADOS a los que llega cada cosa
+     (menú abierto, tarjeta girada, filtro activo, favorito...).
+
+   Aquí no he escrito ni una "transition" ni una "animation". Para
+   decidir qué iba en cada archivo me he hecho siempre la misma
+   pregunta: ¿este cambio da INFORMACIÓN o solo es el MOVIMIENTO?
+   · Si da información (el menú está abierto, estoy en esta página,
+     la tarjeta enseña su parte de atrás) lo pongo aquí, porque tiene
+     que funcionar aunque no haya animaciones.
+   · Si solo es el viaje de un estado a otro (cuánto tarda, con qué
+     curva, desde dónde sale) lo pongo en animaciones.css.
+   Así, si borro animaciones.css, la web pierde el movimiento pero
+   sigue funcionando entera.
+
+   He trabajado mobile first: lo que está fuera de las media queries
+   es para un móvil de 360 px, y las media queries (siempre con
+   min-width) solo AÑADEN columnas y espacio cuando la pantalla crece
+   (700, 900 y 1000 px).
+   ================================================================= */
+
+
+/* -----------------------------------------------------------------
+   1. LETRAS
+   Las fuentes las cargo desde Google Fonts con un <link> en el
+   <head> de cada página (está explicado allí). Son dos, con licencia
+   libre:
+   · Bebas Neue para los títulos: es alta y estrecha, como los números
+     de un marcador o de una camiseta, y le da el aire deportivo.
+   · Barlow para el texto: también tiene algo de deportiva pero se lee
+     muy bien en párrafos largos.
+   Las uso con las variables --fuente-titulo y --fuente-texto (abajo).
+   Detrás de cada una pongo letras del sistema parecidas (Impact,
+   Arial) por si Google Fonts no carga: la web se sigue leyendo bien.
+   ----------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------
+   2. MIS TOKENS DE DISEÑO
+   Igual que los tokens de movimiento, he puesto aquí todos los
+   colores una sola vez. Los colores del club son el AZUL y el ROJO
+   (los mismos de los logos y de la camiseta) sobre un azul marino
+   muy oscuro.
+   He comprobado el contraste de los textos: el blanco sobre el
+   marino pasa de 15:1 y el rojo claro de los títulos de 6:1. Para
+   los botones uso un rojo un poco más oscuro (--rojo-boton) porque
+   con el rojo normal el texto blanco no llegaba al 4,5:1 que pide
+   la accesibilidad.
+   ----------------------------------------------------------------- */
+:root {
+    --fondo: #070f24;       /* marino casi negro: fondo general */
+    --panel: #0f1c3d;       /* un poco más claro para las tarjetas */
+    --alterno: #0b1631;     /* secciones alternas, para dar ritmo */
+    --borde: #263a6b;
+
+    --azul: #1f5eff;        /* azul del club */
+    --azul-claro: #7aa2ff;  /* azul para texto pequeño sobre el marino */
+    --rojo: #e63946;        /* rojo del club */
+    --rojo-claro: #ff6b76;  /* rojo para palabras destacadas */
+    --rojo-boton: #d62839;  /* rojo de botón: texto blanco con 4,7:1 */
+
+    --blanco: #f7f9ff;
+    --gris: #b7c2da;        /* texto secundario */
+    --tinta: #070f24;       /* texto oscuro sobre fondos claros */
+    --foco: #ffd23f;        /* amarillo del contorno de foco: no es
+                               de la marca a propósito, así nunca se
+                               confunde con un adorno y se ve igual
+                               sobre azul, rojo o marino */
+
+    /* Degradado "mitad y mitad" de la equipación: lo reutilizo en la
+       cinta, la barra de progreso, el borde de la portada... */
+    --club: linear-gradient(90deg, var(--azul) 50%, var(--rojo) 50%);
+    --club-suave: linear-gradient(90deg, var(--azul), var(--rojo));
+
+    --fuente-titulo: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+    --fuente-texto: "Barlow", Arial, Helvetica, sans-serif;
+
+    --ancho: 1160px;
+    --radio: 18px;
+
+    color-scheme: dark;     /* los controles nativos salen en oscuro */
+}
+
+
+/* -----------------------------------------------------------------
+   3. BASE
+   ----------------------------------------------------------------- */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    /* Cuando salto a un ancla (#catalogo) el título no queda tapado
+       por la cabecera, que es fija. */
+    scroll-padding-top: 90px;
+}
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--blanco);
+    font-family: var(--fuente-texto);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    /* Red de seguridad contra el scroll horizontal: si una animación
+       saca algo de la pantalla (la cinta, una tarjeta en 3D) se
+       recorta en vez de crear una barra. Uso "clip" y no "hidden"
+       porque "hidden" estropea la cabecera con position: sticky. */
+    overflow-x: clip;
+}
+
+img,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+p,
+li {
+    color: var(--gris);
+}
+
+/* Los títulos van en Bebas Neue. Como es una letra muy estrecha la
+   pongo más grande que una normal y con un poco de espacio entre
+   letras para que no se apelotonen. Bebas solo tiene mayúsculas,
+   así que el texto siempre se ve en mayúsculas aunque en el HTML
+   esté escrito normal. */
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    font-family: var(--fuente-titulo);
+    font-weight: 400;
+    letter-spacing: .02em;
+    line-height: .95;
+    overflow-wrap: anywhere;
+}
+
+h1 {
+    margin-bottom: .3em;
+    font-size: clamp(3.4rem, 13vw, 7rem);
+}
+
+h2 {
+    font-size: clamp(2.5rem, 7vw, 4.2rem);
+}
+
+h3 {
+    font-size: 1.8rem;
+    letter-spacing: .03em;
+}
+
+/* La palabra destacada de cada título va en rojo y lleva debajo una
+   barra con los colores del club. Aquí la barra ya está dibujada
+   entera (scaleX(1)): en animaciones.css hago que se "pinte" de
+   izquierda a derecha, pero sin animaciones se ve igual. */
+em {
+    position: relative;
+    color: var(--rojo-claro);
+    font-style: normal;
+}
+
+/* inline-block para que la palabra destacada no se parta en dos
+   líneas: si se partiera, la barra de debajo solo saldría en un trozo. */
+h1 em {
+    display: inline-block;
+}
+
+h1 em::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: .02em;
+    height: .08em;
+    background: var(--club);
+    border-radius: 4px;
+    transform-origin: left;
+}
+
+/* Foco visible en TODA la web: contorno amarillo grueso y separado
+   del elemento. Uso :focus-visible y no :focus para que salga al
+   navegar con el teclado pero no cada vez que hago clic con el ratón. */
+:focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+}
+
+/* Para esconder los checkbox y radio que hacen funcionar el menú,
+   los filtros, los giros 3D y las pausas sin JavaScript. No uso
+   display:none porque así el control desaparecería también para el
+   teclado y el lector de pantalla; de esta forma solo es invisible. */
+.visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.contenedor {
+    width: min(100% - 32px, var(--ancho));
+    margin-inline: auto;
+}
+
+/* Enlace "Saltar al contenido": está fuera de la pantalla y solo
+   aparece cuando llega el foco con el tabulador. */
+.salto {
+    position: absolute;
+    top: -100px;
+    left: 10px;
+    z-index: 300;
+    padding: 10px 15px;
+    background: var(--foco);
+    color: var(--tinta);
+    font-weight: 800;
+}
+
+.salto:focus {
+    top: 10px;
+}
+
+
+/* -----------------------------------------------------------------
+   4. CABECERA Y MENÚ
+   En el móvil el menú es un panel que se despliega con un checkbox
+   (#menu). Aquí solo decido si se ve o no; el fundido y el
+   deslizamiento están en animaciones.css.
+   ----------------------------------------------------------------- */
+.cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #070f24f0;
+    border-bottom: 1px solid var(--borde);
+    /* backdrop-filter no se anima: solo desenfoca lo que pasa por
+       debajo para que el menú se lea siempre bien. */
+    backdrop-filter: blur(12px);
+}
+
+/* Barra de progreso de lectura en el borde de la cabecera. Está
+   oculta y solo la enseño en animaciones.css si el navegador sabe
+   hacer animation-timeline: scroll(). */
+.barra-progreso {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    background: var(--club-suave);
+    transform-origin: left;
+}
+
+.navegacion-principal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 72px;
+    gap: 12px;
+}
+
+.logo img {
+    width: clamp(150px, 40vw, 200px);
+    height: auto;
+}
+
+/* Botón hamburguesa: mínimo 44 px de alto para que se pulse bien
+   con el dedo. */
+.menu-boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* Las tres rayas del icono las dibujo yo con <span> para poder
+   convertirlas en una X. */
+.icono-menu {
+    position: relative;
+    width: 20px;
+    height: 14px;
+}
+
+.icono-menu span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+}
+
+.icono-menu span:nth-child(1) { top: 0; }
+.icono-menu span:nth-child(2) { top: 6px; }
+.icono-menu span:nth-child(3) { top: 12px; }
+
+/* ESTADO abierto: la raya de arriba baja 6 px y gira 45°, la de
+   abajo sube y gira −45° y la del medio desaparece. El icono pasa de
+   "abrir" a "cerrar" y así se sabe qué hará el siguiente toque. */
+.menu-check:checked + .menu-boton .icono-menu span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.menu-check:checked + .menu-boton .icono-menu span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.menu-check:checked + .menu-boton .icono-menu span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+.menu-check:focus-visible + .menu-boton {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+}
+
+.menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px 18px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--borde);
+    /* Escondo el panel con visibility y no con display: display no
+       tiene pasos intermedios y no se podría animar. Además, con
+       visibility los enlaces del menú cerrado no reciben el foco. */
+    visibility: hidden;
+}
+
+.menu-check:checked ~ .menu {
+    visibility: visible;
+}
+
+.menu a {
+    position: relative;
+    padding: 12px;
+    border-radius: 9px;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+
+/* Subrayado de los enlaces: un ::after que escalo en horizontal.
+   Escalar (transform) en vez de cambiar el ancho evita que el
+   navegador tenga que recalcular toda la página. */
+.menu a::after,
+.pie a::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 6px;
+    height: 2px;
+    background: var(--club-suave);
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+.pie a::after {
+    left: 0;
+    right: 0;
+    bottom: -2px;
+}
+
+/* La página en la que estoy queda siempre subrayada: es información
+   (dónde estoy), no adorno, por eso está en este archivo. */
+.menu a[aria-current="page"] {
+    color: var(--rojo-claro);
+}
+
+.menu a[aria-current="page"]::after,
+.menu a:focus-visible::after,
+.pie a:focus-visible::after {
+    transform: scaleX(1);
+}
+
+@media (hover: hover) {
+    .menu a:hover::after,
+    .pie a:hover::after {
+        transform: scaleX(1);
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   5. PIEZAS QUE SE REPITEN
+   ----------------------------------------------------------------- */
+.etiqueta {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--azul-claro);
+    font-size: .85rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+}
+
+.introduccion {
+    max-width: 720px;
+    font-size: 1.15rem;
+}
+
+.seccion {
+    padding: 64px 0;
+}
+
+.seccion-alterna {
+    background: var(--alterno);
+}
+
+.cabecera-seccion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.cabecera-pagina {
+    padding: 72px 0 56px;
+    background:
+        radial-gradient(circle at 90% 10%, #e6394622, transparent 45%),
+        radial-gradient(circle at 10% 90%, #1f5eff22, transparent 45%),
+        var(--fondo);
+}
+
+/* Botones: 48 px de alto mínimo para el dedo. position + overflow
+   son para el brillo que cruza el botón al pasar el ratón
+   (animaciones.css): así no se sale por las esquinas. */
+.boton {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 22px;
+    background: var(--rojo-boton);
+    color: var(--blanco);
+    border: 1px solid var(--rojo-boton);
+    border-radius: 11px;
+    font-weight: 800;
+    letter-spacing: .03em;
+    cursor: pointer;
+}
+
+/* El brillo: una franja blanca transparente e inclinada que espera
+   fuera del botón, a la izquierda. */
+.boton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, #ffffff55 50%, transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+}
+
+.boton-secundario {
+    background: var(--azul);
+    border-color: var(--azul);
+}
+
+.botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.enlace-destacado {
+    display: inline-block;
+    color: var(--rojo-claro);
+    font-weight: 800;
+    border-bottom: 2px solid var(--rojo-claro);
+}
+
+.rejilla {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.dos-columnas {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+}
+
+.tarjeta {
+    min-width: 0;
+    padding: 24px;
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+.tarjeta h3 {
+    margin: 14px 0 8px;
+}
+
+.tarjeta p:last-child {
+    margin-bottom: 0;
+}
+
+/* Tarjeta con imagen. La imagen va dentro de .marco-imagen, que
+   tiene overflow hidden para que el zoom no se salga de las
+   esquinas redondeadas. */
+.tarjeta-imagen {
+    display: block;
+    padding: 14px;
+}
+
+.marco-imagen {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--panel);
+}
+
+/* "Skeleton": mientras la imagen no ha cargado se ve esta franja
+   clara detrás (en animaciones.css la hago pasar de lado a lado).
+   La imagen está por encima (z-index) y, cuando llega, la tapa. */
+.marco-imagen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, #ffffff14, transparent);
+    transform: translateX(-100%);
+}
+
+/* Todas mis ilustraciones miden 1000 × 660, así que uso esa misma
+   proporción: se ven enteras, sin recortes ni bandas vacías, y el
+   hueco está reservado antes de que cargue la imagen. */
+.marco-imagen img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1000 / 660;
+    object-fit: cover;
+}
+
+.tarjeta-imagen h3,
+.tarjeta-imagen p {
+    padding-inline: 6px;
+}
+
+.icono-servicio {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    aspect-ratio: 1;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    /* Truco para un borde con degradado: el fondo de dentro es el
+       panel y el del borde es el degradado del club. */
+    background:
+        linear-gradient(var(--panel), var(--panel)) padding-box,
+        var(--club-suave) border-box;
+    font-size: 1.8rem;
+}
+
+.flecha {
+    display: inline-block;
+}
+
+
+/* -----------------------------------------------------------------
+   6. PORTADA (index.html)
+   ----------------------------------------------------------------- */
+.portada {
+    background:
+        radial-gradient(circle at 85% 15%, #e6394630, transparent 45%),
+        radial-gradient(circle at 15% 85%, #1f5eff30, transparent 45%),
+        linear-gradient(130deg, #070f24, #0d1a44);
+}
+
+.portada-grid {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+    padding-block: 56px;
+}
+
+.portada h1 {
+    max-width: 700px;
+}
+
+.estadisticas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.estadisticas li {
+    display: flex;
+    flex-direction: column;
+    font-size: .9rem;
+}
+
+.estadisticas strong {
+    color: var(--blanco);
+    font-family: var(--fuente-titulo);
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+/* Escena ilustrada en tres capas (estadio, jugador y sello). El
+   borde lleva los dos colores del club con el mismo truco que los
+   iconos. overflow hidden recorta la "respiración" del jugador. */
+.escena-portada {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    aspect-ratio: 1.2;
+    border: 3px solid transparent;
+    border-radius: 25px;
+    background:
+        linear-gradient(var(--fondo), var(--fondo)) padding-box,
+        var(--club-suave) border-box;
+    box-shadow: 0 25px 60px #0008, -20px 0 50px #1f5eff30, 20px 0 50px #e6394630;
+}
+
+.imagen-estadio {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.imagen-jugador {
+    position: absolute;
+    bottom: -5%;
+    left: 19%;
+    z-index: 2;
+    width: 62%;
+    height: 92%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px #0008);
+}
+
+.imagen-sello {
+    position: absolute;
+    top: 8%;
+    right: 6%;
+    z-index: 3;
+    width: 22%;
+    filter: drop-shadow(0 8px 13px #0009);
+}
+
+/* Cinta de palabras: el mismo texto dos veces seguido. Al mover la
+   pista un 50 % la segunda copia queda justo donde estaba la
+   primera y el bucle no da saltos. */
+.cinta {
+    overflow: hidden;
+    background: var(--club);
+    color: var(--blanco);
+}
+
+.cinta-pista {
+    display: flex;
+    width: max-content;
+}
+
+.cinta-pista span {
+    padding: 12px 20px 9px;
+    white-space: nowrap;
+    font-family: var(--fuente-titulo);
+    font-size: 1.5rem;
+    letter-spacing: .12em;
+}
+
+
+/* -----------------------------------------------------------------
+   7. PIZARRA TÁCTICA (index.html)
+   ----------------------------------------------------------------- */
+.campo {
+    position: relative;
+    overflow: hidden;      /* las fichas nunca salen del campo */
+    isolation: isolate;
+    aspect-ratio: 1.5;
+    border: 5px solid #d9f2dc;
+    border-radius: 17px;
+    background: repeating-linear-gradient(90deg, #1c7942 0 12.5%, #23874a 12.5% 25%);
+    box-shadow: 0 20px 45px #0006;
+}
+
+.linea-media,
+.circulo-central,
+.area {
+    position: absolute;
+    border: 2px solid #e4f6e6;
+}
+
+.linea-media {
+    left: 50%;
+    height: 100%;
+    border-width: 0 0 0 2px;
+}
+
+.circulo-central {
+    top: 50%;
+    left: 50%;
+    width: 28%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.area {
+    top: 29%;
+    width: 15%;
+    height: 42%;
+}
+
+.area-izquierda { left: -2px; }
+.area-derecha { right: -2px; }
+
+.jugador {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: clamp(26px, 6vw, 40px);
+    aspect-ratio: 1;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px #0008;
+    font-size: .8rem;
+    font-weight: 800;
+}
+
+/* Nuestro equipo lleva la equipación del club (mitad azul, mitad
+   roja) y el rival va de blanco: se distinguen de un vistazo. */
+.nuestro {
+    background: var(--club);
+}
+
+.rival {
+    background: var(--blanco);
+    border-color: var(--tinta);
+    color: var(--tinta);
+}
+
+.j1 { left: 17%; top: 42%; }
+.j2 { left: 29%; top: 20%; }
+.j3 { left: 38%; top: 65%; }
+.j4 { left: 46%; top: 41%; }
+.j5 { left: 63%; top: 29%; }
+.j6 { left: 74%; top: 65%; }
+.j7 { left: 83%; top: 39%; }
+.j8 { left: 59%; top: 74%; }
+
+.balon {
+    position: absolute;
+    z-index: 3;
+    top: 49%;
+    left: 42%;
+    font-size: clamp(1rem, 4vw, 1.6rem);
+}
+
+/* Botón de pausa (es el label de un checkbox). */
+.control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--azul);
+    border-radius: 11px;
+    background: var(--panel);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.pausa-check:focus-visible ~ .control {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+}
+
+/* El texto del botón cambia con el estado ("Pausar" o "Reanudar")
+   para que diga lo que va a pasar al pulsarlo. */
+.control .texto-reanudar { display: none; }
+.pausa-check:checked ~ .control .texto-pausar { display: none; }
+.pausa-check:checked ~ .control .texto-reanudar { display: inline; }
+
+
+/* -----------------------------------------------------------------
+   8. TARJETAS 3D (logotipos en index.html e instalaciones)
+   ESTADO: la tarjeta girada enseña la cara de atrás. El giro en sí
+   está en animaciones.css; sin él la tarjeta cambia de cara de golpe
+   y la información se sigue viendo.
+   ----------------------------------------------------------------- */
+.tarjeta-3d {
+    position: relative;
+    min-width: 0;
+}
+
+.tarjeta-3d > label {
+    display: block;
+    height: 330px;
+    cursor: pointer;
+    /* La perspectiva la pongo en el PADRE DIRECTO de lo que gira
+       (.interior-3d), porque perspective solo afecta a los hijos
+       directos. Es la distancia a la que está el ojo: con 1000 px el
+       giro tiene profundidad pero no deforma; probé con 300 px y la
+       tarjeta se estiraba demasiado. */
+    perspective: 1000px;
+}
+
+.interior-3d {
+    position: relative;
+    display: block;
+    height: 100%;
+    /* Hace que las dos caras compartan el mismo espacio 3D. Sin esto
+       se aplanarían y no se podría ver la de atrás. */
+    transform-style: preserve-3d;
+}
+
+.cara-3d {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 22px;
+    border: 1px solid var(--borde);
+    border-radius: 20px;
+    background: linear-gradient(150deg, #13265a, var(--panel));
+    text-align: center;
+    /* Esconde la cara cuando mira hacia atrás; si no, se verían las
+       dos a la vez y una de ellas al revés, como en un espejo. */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.cara-3d img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.cara-3d strong {
+    font-family: var(--fuente-titulo);
+    font-size: 1.8rem;
+    font-weight: 400;
+    letter-spacing: .03em;
+}
+
+.cara-3d small {
+    color: var(--azul-claro);
+    font-weight: 800;
+}
+
+/* La cara de atrás va en rojo del club y empieza ya girada 180°:
+   cuando la tarjeta gire, quedará de frente. */
+.trasera-3d {
+    background: linear-gradient(150deg, #8f1d2a, #3b0f22);
+    border-color: var(--rojo);
+    transform: rotateY(180deg);
+}
+
+.trasera-3d small {
+    color: var(--blanco);
+}
+
+.tarjeta-3d > input:checked + label .interior-3d {
+    transform: rotateY(180deg);
+}
+
+.tarjeta-3d > input:focus-visible + label {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+    border-radius: 20px;
+}
+
+
+/* -----------------------------------------------------------------
+   9. CATÁLOGO Y FILTROS (entrenamientos.html)
+   Los radio ocultos guardan qué filtro está elegido y con el
+   selector de hermanos (~) escondo las tarjetas de las demás
+   categorías.
+   ----------------------------------------------------------------- */
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 24px 0;
+}
+
+.filtros label {
+    min-height: 44px;
+    padding: 10px 18px;
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+#todos:checked ~ .filtros label[for="todos"],
+#tecnica:checked ~ .filtros label[for="tecnica"],
+#tactica:checked ~ .filtros label[for="tactica"],
+#equipo:checked ~ .filtros label[for="equipo"] {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: var(--blanco);
+}
+
+#todos:focus-visible ~ .filtros label[for="todos"],
+#tecnica:focus-visible ~ .filtros label[for="tecnica"],
+#tactica:focus-visible ~ .filtros label[for="tactica"],
+#equipo:focus-visible ~ .filtros label[for="equipo"] {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+}
+
+#tecnica:checked ~ .ejercicios .ejercicio:not(.tecnica),
+#tactica:checked ~ .ejercicios .ejercicio:not(.tactica),
+#equipo:checked ~ .ejercicios .ejercicio:not(.equipo) {
+    display: none;
+}
+
+.ejercicio {
+    padding: 0;
+    overflow: hidden;
+}
+
+.ejercicio > .marco-imagen {
+    border-radius: 0;
+}
+
+.contenido-tarjeta {
+    padding: 20px;
+}
+
+.ejercicio details {
+    padding: 12px 0;
+    border-top: 1px solid var(--borde);
+}
+
+/* Desplegable: quito el triángulo que trae el navegador y dibujo uno
+   mío, porque el original no se puede animar. */
+.ejercicio summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--azul-claro);
+    font-weight: 800;
+    list-style: none;
+    cursor: pointer;
+}
+
+.ejercicio summary::-webkit-details-marker {
+    display: none;
+}
+
+.ejercicio summary::before {
+    content: "▸";
+    display: inline-block;
+}
+
+.ejercicio details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+/* Favorito ("me gusta"): el checkbox de verdad está oculto y el
+   corazón es lo que se ve. */
+.favorito {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 6px 16px 6px 10px;
+    border: 1px solid var(--borde);
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.corazon {
+    display: inline-block;
+    color: var(--gris);
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.favorito:has(input:checked) {
+    border-color: var(--rojo);
+}
+
+.favorito input:checked + .corazon {
+    color: var(--rojo-claro);
+}
+
+.favorito:has(input:focus-visible) {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+}
+
+/* Tooltip (etiqueta flotante) del favorito: explica PARA QUÉ sirve
+   el corazón. Está escondido (opacity 0) y aparece con el hover o
+   con el foco del teclado. pointer-events: none para que no tape
+   nada mientras está invisible. */
+.tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    z-index: 5;
+    width: max-content;
+    max-width: 220px;
+    padding: 8px 12px;
+    background: var(--blanco);
+    color: var(--tinta);
+    border-radius: 8px;
+    font-size: .85rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 18px;
+    border: 7px solid transparent;
+    border-top-color: var(--blanco);
+}
+
+.favorito:has(input:focus-visible) .tooltip {
+    opacity: 1;
+}
+
+@media (hover: hover) {
+    .favorito:hover .tooltip {
+        opacity: 1;
+    }
+}
+
+
+/* -----------------------------------------------------------------
+   10. PRISMA DE LOS TRES PILARES (entrenamientos.html)
+   Tiene tres caras: cada una gira 120° y se separa 66 px del
+   centro. Ese número lo calculé: es la apotema de un triángulo de
+   230 px de lado → 230 / (2 · tan 60°) ≈ 66.
+   ----------------------------------------------------------------- */
+.modulo-cubo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.escena-cubo {
+    width: 230px;
+    height: 230px;
+    margin: 30px auto 50px;
+    perspective: 900px;
+}
+
+.cubo {
+    position: relative;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.cara-cubo {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 2px solid var(--azul-claro);
+    border-radius: 15px;
+    background: linear-gradient(135deg, #1a3a9e, #0b1631);
+    box-shadow: inset 0 0 28px #1f5eff40;
+    font-size: 3rem;
+    text-align: center;
+}
+
+.cara-cubo-b {
+    border-color: var(--rojo-claro);
+    background: linear-gradient(135deg, #a3202f, #2a0d1c);
+}
+
+.cara-cubo strong {
+    font-family: var(--fuente-titulo);
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: .05em;
+}
+
+.cara-cubo span { color: var(--gris); font-size: .95rem; }
+
+.cara-cubo-a { transform: rotateY(0deg) translateZ(66px); }
+.cara-cubo-b { transform: rotateY(120deg) translateZ(66px); }
+.cara-cubo-c { transform: rotateY(240deg) translateZ(66px); }
+
+
+/* -----------------------------------------------------------------
+   11. GUÍA DE MOVIMIENTO (movimiento.html)
+   ----------------------------------------------------------------- */
+/* Las tablas son más anchas que un móvil: el scroll horizontal se
+   queda DENTRO de su caja y nunca en la página. */
+.tabla-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--borde);
+    border-radius: 15px;
+}
+
+table {
+    width: 100%;
+    min-width: 860px;
+    border-collapse: collapse;
+}
+
+caption {
+    padding: 12px;
+    text-align: left;
+    color: var(--gris);
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--borde);
+}
+
+th {
+    background: #13265a;
+    color: var(--blanco);
+    font-weight: 800;
+}
+
+td {
+    color: var(--gris);
+}
+
+code {
+    color: var(--azul-claro);
+    font-size: .92em;
+}
+
+.cita {
+    margin: 24px 0 0;
+    padding: 6px 0 6px 18px;
+    border-left: 4px solid var(--rojo);
+}
+
+.cita p {
+    margin: 0;
+    color: var(--blanco);
+    font-family: var(--fuente-titulo);
+    font-size: 2rem;
+    letter-spacing: .03em;
+}
+
+.decisiones {
+    display: grid;
+    gap: 20px;
+}
+
+.decision {
+    padding: 22px;
+    background: var(--panel);
+    border-left: 4px solid var(--rojo);
+    border-radius: 0 var(--radio) var(--radio) 0;
+}
+
+.decision:nth-child(even) {
+    border-left-color: var(--azul);
+}
+
+.decision h3 {
+    color: var(--blanco);
+}
+
+.tipo-decision {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 2px 10px;
+    border: 1px solid var(--borde);
+    border-radius: 50px;
+    color: var(--azul-claro);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+
+.galeria-medios {
+    display: grid;
+    gap: 20px;
+}
+
+.galeria-medios figure {
+    margin: 0;
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+.galeria-medios video,
+.galeria-medios img {
+    width: 100%;
+    border-radius: 10px;
+    background: #000;
+}
+
+.subtitulo-medios {
+    margin-top: 48px;
+}
+
+/* Las capturas son de página entera (muy altas): enseño solo la
+   parte de arriba y al pulsar se abre entera. */
+.galeria-capturas img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: top;
+}
+
+.galeria-medios figcaption {
+    margin-top: 10px;
+    color: var(--gris);
+    font-size: .92rem;
+}
+
+
+/* -----------------------------------------------------------------
+   12. PIE DE PÁGINA
+   ----------------------------------------------------------------- */
+.pie {
+    padding: 40px 0 100px;   /* 100 px abajo: hueco para el interruptor */
+    background: var(--alterno);
+    border-top: 3px solid transparent;
+    border-image: var(--club-suave) 1;
+}
+
+.pie-rejilla {
+    display: grid;
+    gap: 24px;
+}
+
+.pie img {
+    width: 170px;
+}
+
+.pie ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pie a {
+    position: relative;
+    color: var(--blanco);
+    font-weight: 600;
+}
+
+.pie small {
+    color: var(--gris);
+}
+
+
+/* -----------------------------------------------------------------
+   13. INTERRUPTOR "PAUSAR ANIMACIONES"
+   Botón fijo en todas las páginas que para todos los bucles. Lo puse
+   porque la norma WCAG 2.2.2 dice que todo lo que se mueve más de
+   5 segundos se tiene que poder parar.
+   ----------------------------------------------------------------- */
+.interruptor {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 150;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 14px 8px 10px;
+    background: var(--fondo);
+    border: 1px solid var(--azul);
+    border-radius: 50px;
+    box-shadow: 0 8px 24px #0008;
+    font-size: .9rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.interruptor-pista {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    border-radius: 50px;
+    background: #2a3a66;
+}
+
+.interruptor-bola {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--blanco);
+}
+
+/* ESTADO activado: la pista se pone roja y la bola se va a la
+   derecha, como un interruptor de verdad. */
+.pausa-global:checked + .interruptor .interruptor-pista {
+    background: var(--rojo-boton);
+}
+
+.pausa-global:checked + .interruptor .interruptor-bola {
+    transform: translateX(18px);
+}
+
+.pausa-global:focus-visible + .interruptor {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+}
+
+
+/* -----------------------------------------------------------------
+   14. RESPONSIVE (mobile first: aquí solo AÑADO cosas)
+   ----------------------------------------------------------------- */
+
+/* Tableta (desde 700 px): dos columnas. */
+@media (min-width: 700px) {
+    .rejilla-tres,
+    .rejilla-cuatro,
+    .decisiones,
+    .galeria-medios {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dos-columnas {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .pie-rejilla {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+    }
+}
+
+/* Desde 900 px el menú cabe en una línea. Antes no: con el logo y
+   cuatro enlaces se apretaba demasiado a 768 px (tableta). */
+@media (min-width: 900px) {
+    .menu-boton {
+        display: none;
+    }
+
+    .menu {
+        position: static;
+        flex-direction: row;
+        gap: 4px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        visibility: visible;
+    }
+}
+
+/* Ordenador (desde 1000 px): tres y cuatro columnas. */
+@media (min-width: 1000px) {
+    .rejilla-tres {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .rejilla-cuatro {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .galeria-capturas {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .portada-grid {
+        grid-template-columns: 1.05fr 1fr;
+        min-height: 600px;
+    }
+
+    .seccion {
+        padding: 88px 0;
+    }
+}

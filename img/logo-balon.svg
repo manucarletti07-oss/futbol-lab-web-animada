@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="660" viewBox="0 0 1000 660"><defs>
+<marker id="fv" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ffd23f"/></marker>
+<marker id="fg" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#a9b4c8"/></marker>
+<marker id="fb" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#f7f9ff"/></marker>
+<marker id="fr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#e63946"/></marker>
+<radialGradient id="foco"><stop stop-color="#8fb0ff" stop-opacity=".55"/><stop offset="1" stop-color="#8fb0ff" stop-opacity="0"/></radialGradient>
+<pattern id="rayas" width="140" height="20" patternUnits="userSpaceOnUse"><rect width="70" height="20" fill="#1f5eff"/><rect x="70" width="70" height="20" fill="#e63946"/></pattern>
+<linearGradient id="club" x2="1"><stop offset=".5" stop-color="#1f5eff"/><stop offset=".5" stop-color="#e63946"/></linearGradient>
+<radialGradient id="focoB"><stop stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<linearGradient id="cielo" x2="0" y2="1"><stop stop-color="#040a1c"/><stop offset="1" stop-color="#14286a"/></linearGradient>
+<linearGradient id="pared" x2="0" y2="1"><stop stop-color="#15264f"/><stop offset="1" stop-color="#0c1736"/></linearGradient>
+<linearGradient id="agua" x2="0" y2="1"><stop stop-color="#7fd3ff"/><stop offset="1" stop-color="#2a7fc0"/></linearGradient>
+</defs><rect width="1000" height="660" rx="44" fill="#0a1633"/><circle cx="500" cy="330" r="268" fill="url(#rayas)"/><g transform="translate(500 330) scale(2.0689655172413794)"><circle r="116" fill="#f7f9ff" stroke="#0a1633" stroke-width="6"/><polygon points="0,-52.2 49.88,-13.92 32.48,46.4 -32.48,46.4 -49.88,-13.92" fill="#0a1633"/><path d="M-48.72 -11.6 -104.4 -25.52 M48.72 -11.6 104.4 -25.52 M-33.64 46.4 -48.72 102.08 M33.64 46.4 48.72 102.08" fill="none" stroke="#0a1633" stroke-width="6"/></g><rect x="290" y="400" width="420" height="92" rx="24" fill="#0a1633" stroke="#e63946" stroke-width="5"/><text x="500" y="463" font-family="Arial,Helvetica,sans-serif" font-size="56" font-weight="900" fill="#f7f9ff" text-anchor="middle">FÚTBOL LAB</text></svg>
